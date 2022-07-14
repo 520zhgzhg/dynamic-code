@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.zhg2yqq.wheels.dynamic.code.autoconfigure.DynamicCodeAutoConfiguration
