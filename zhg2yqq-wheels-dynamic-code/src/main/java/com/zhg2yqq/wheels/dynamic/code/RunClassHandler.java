@@ -12,10 +12,13 @@ import com.zhg2yqq.wheels.dynamic.code.core.HotSwapClassLoader;
 import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
 import com.zhg2yqq.wheels.dynamic.code.dto.Parameters;
+import com.zhg2yqq.wheels.dynamic.code.exception.BaseDynamicException;
+import com.zhg2yqq.wheels.dynamic.code.exception.ClassLoadException;
+import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
 import com.zhg2yqq.wheels.dynamic.code.util.ClassUtils;
 
 /**
- * 执行Java代码
+ * 执行Java代码，如果系统只需编译一次代码则推荐使用该执行器
  * 
  * @version zhg2yqq v1.0
  * @author 周海刚, 2022年7月8日
@@ -52,8 +55,10 @@ public class RunClassHandler extends AbstractRunHandler {
      * 必须提前预加载类
      * 
      * @param sourceStrs 源码
+     * @throws ClassLoadException
+     * @throws CompileException
      */
-    public void preloadClass(List<String> sourceStrs) {
+    public void preloadClass(List<String> sourceStrs) throws CompileException, ClassLoadException {
         for (String sourceStr : sourceStrs) {
             String fullClassName = ClassUtils.getFullClassName(sourceStr);
             Class<?> clazz = super.loadClass(fullClassName, sourceStr, loader);
@@ -68,12 +73,15 @@ public class RunClassHandler extends AbstractRunHandler {
      * @param methodName 方法名，例如getTime
      * @param parameters 方法参数
      * @return 方法执行结果
-     * @throws Exception
+     * @throws BaseDynamicException
      */
-    @Override
-    public ExecuteResult run(String fullClassName, String methodName, Parameters parameters)
-        throws Exception {
+    public ExecuteResult runClassJava(String fullClassName, String methodName,
+                                      Parameters parameters)
+        throws BaseDynamicException {
         Class<?> clazz = loadedClasses.get(fullClassName);
+        if (clazz == null) {
+            throw new BaseDynamicException(fullClassName + " 尚未编译源码");
+        }
         return getExecuter().runMethod(clazz, methodName, parameters, getCalTime());
     }
 

@@ -19,7 +19,7 @@ import lombok.Setter;
  * @author 周海刚, 2022年7月13日
  */
 @Getter @Setter
-@ConfigurationProperties(prefix = "dynamic-code")
+@ConfigurationProperties(prefix = "dynamic.code")
 public class DynamicCodeProperties {
     /**
      * 替换代码中风险类（key:待替换的类名,例如:java/io/File，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackFile）

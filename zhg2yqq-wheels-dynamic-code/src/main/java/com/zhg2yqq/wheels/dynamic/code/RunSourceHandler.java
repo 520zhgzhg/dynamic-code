@@ -12,6 +12,9 @@ import com.googlecode.concurrentlinkedhashmap.Weighers;
 import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
 import com.zhg2yqq.wheels.dynamic.code.dto.Parameters;
+import com.zhg2yqq.wheels.dynamic.code.exception.BaseDynamicException;
+import com.zhg2yqq.wheels.dynamic.code.exception.ClassLoadException;
+import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
 import com.zhg2yqq.wheels.dynamic.code.util.ClassUtils;
 
 /**
@@ -44,7 +47,8 @@ public class RunSourceHandler extends AbstractRunHandler {
         this(compiler, executer, calTime, hackers, 100);
     }
 
-    public RunSourceHandler(IStringCompiler compiler, IClassExecuter executer, CalTimeDTO calTime, int cacheSize) {
+    public RunSourceHandler(IStringCompiler compiler, IClassExecuter executer, CalTimeDTO calTime,
+            int cacheSize) {
         this(compiler, executer, calTime, null, cacheSize);
     }
 
@@ -66,34 +70,17 @@ public class RunSourceHandler extends AbstractRunHandler {
     }
 
     /**
-     * 调用源码方法。
-     * 若不存在加载的类，将会编译源码缓存加载后的类；存在则直接返回原始类；
-     * 若需要重新编译加载类，请调用runSourceJava(String source, String methodName, Parameters parameters, boolean reloadClass) reloadClass=true方法
-     * 
-     * @param source 源码
-     * @param methodName 方法名，例如getTime
-     * @param parameters 方法参数
-     * @return 方法执行返回值
-     * @throws Exception
-     */
-    @Override
-    public ExecuteResult run(String source, String methodName, Parameters parameters)
-        throws Exception {
-        return this.runSourceJava(source, methodName, parameters);
-    }
-
-    /**
      * 通过源码获取类，并调用方法。
      * 若不存在加载的类，将会编译源码缓存加载后的类；存在则直接返回类
      * 
      * @param source 源码
      * @param methodName 方法名
      * @param parameters 方法参数
-     * @return
-     * @throws Exception
+     * @return 方法执行结果
+     * @throws BaseDynamicException
      */
     public ExecuteResult runSourceJava(String source, String methodName, Parameters parameters)
-        throws Exception {
+        throws BaseDynamicException {
         return this.runSourceJava(source, methodName, parameters, false);
     }
 
@@ -105,11 +92,11 @@ public class RunSourceHandler extends AbstractRunHandler {
      * @param parameters 方法参数
      * @param reloadClass 是否重新编译加载类
      * @return 方法执行结果
-     * @throws Exception
+     * @throws BaseDynamicException
      */
     public ExecuteResult runSourceJava(String source, String methodName, Parameters parameters,
                                        boolean reloadClass)
-        throws Exception {
+        throws BaseDynamicException {
         if (reloadClass) {
             Class<?> clazz = this.reloadClassFromSource(source);
             return getExecuter().runMethod(clazz, methodName, parameters, getCalTime());
@@ -124,11 +111,29 @@ public class RunSourceHandler extends AbstractRunHandler {
      * 
      * @param sourceStr
      * @return
+     * @throws CompileException 
+     * @throws ClassLoadException 
      */
-    public Class<?> loadClassFromSource(String sourceStr) {
+    public Class<?> loadClassFromSource(String sourceStr)
+        throws CompileException, ClassLoadException {
         String fullClassName = ClassUtils.getFullClassName(sourceStr);
-        return loadedClasses.computeIfAbsent(fullClassName,
-                className -> loadClass(className, sourceStr));
+        try {
+            return loadedClasses.computeIfAbsent(fullClassName, className -> {
+                try {
+                    return loadClass(className, sourceStr);
+                } catch (CompileException | ClassLoadException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof CompileException) {
+                throw (CompileException) e.getCause();
+            } else if (e.getCause() instanceof ClassLoadException) {
+                throw (ClassLoadException) e.getCause();
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
@@ -137,8 +142,11 @@ public class RunSourceHandler extends AbstractRunHandler {
      * 
      * @param sourceStr
      * @return
+     * @throws ClassLoadException
+     * @throws CompileException
      */
-    public Class<?> reloadClassFromSource(String sourceStr) {
+    public Class<?> reloadClassFromSource(String sourceStr)
+        throws CompileException, ClassLoadException {
         String fullClassName = ClassUtils.getFullClassName(sourceStr);
         loadedClasses.put(fullClassName, loadClass(fullClassName, sourceStr));
         return loadedClasses.get(fullClassName);

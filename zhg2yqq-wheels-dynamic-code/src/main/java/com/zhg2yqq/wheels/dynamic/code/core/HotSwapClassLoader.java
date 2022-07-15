@@ -5,6 +5,7 @@
 package com.zhg2yqq.wheels.dynamic.code.core;
 
 import com.zhg2yqq.wheels.dynamic.code.IClassLoader;
+import com.zhg2yqq.wheels.dynamic.code.exception.ClassLoadException;
 
 /**
  * 为了多次载入执行类而加入的加载器 设计一个loadByte()方法将defineClass()方法开放出来，只有我们调用loadByte()方法时才使用自己的类加载器
@@ -20,7 +21,11 @@ public class HotSwapClassLoader extends ClassLoader implements IClassLoader {
     }
 
     @Override
-    public Class<?> loadByte(String name, byte[] classByte) throws ClassNotFoundException {
-        return defineClass(null, classByte, 0, classByte.length);
+    public Class<?> loadByte(String name, byte[] classByte) throws ClassLoadException {
+        try {
+            return defineClass(null, classByte, 0, classByte.length);
+        } catch (Exception e) {
+            throw new ClassLoadException(e);
+        }
     }
 }
