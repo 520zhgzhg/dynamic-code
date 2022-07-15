@@ -35,11 +35,14 @@ public class RunHandlerTest {
     @Test
     public void testRunClass() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
+        CalTimeDTO calTime = new CalTimeDTO();
+        calTime.setCalExecuteTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter executer = new ClassExecuter();
 
         System.out.println("预编译测试 start");
-        RunClassHandler handler = new RunClassHandler(compiler, executer, new CalTimeDTO(), hackers);
+        RunClassHandler handler = new RunClassHandler(compiler, executer, calTime, hackers);
+        
         // 待预编译源码
         List<String> preloadSources = new ArrayList<>();
         preloadSources.add("/*\r\n" 
@@ -101,11 +104,13 @@ public class RunHandlerTest {
     @Test
     public void testRunSource() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
+        CalTimeDTO calTime = new CalTimeDTO();
+        calTime.setCalCompileTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter executer = new ClassExecuter();
 
         System.out.println("源码测试 start");
-        RunSourceHandler handler = new RunSourceHandler(compiler, executer, new CalTimeDTO(), hackers);
+        RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
 
         // 执行源码
         Parameters args0 = new Parameters();
@@ -173,11 +178,12 @@ public class RunHandlerTest {
     public void testHack() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
         hackers.put("java/io/File", "com/zhg2yqq/wheels/dynamic/code/hack/HackFile");
+        CalTimeDTO calTime = new CalTimeDTO();
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter executer = new ClassExecuter();
 
         System.out.println("hack测试 start");
-        RunSourceHandler handler = new RunSourceHandler(compiler, executer, new CalTimeDTO(), hackers);
+        RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
         Parameters pars0 = new Parameters();
         try {
             handler.runSourceJava(
@@ -229,11 +235,12 @@ public class RunHandlerTest {
     @Test
     public void testExecuteException() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
+        CalTimeDTO calTime = new CalTimeDTO();
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter executer = new ClassExecuter();
 
         System.out.println("源码运行异常测试 start");
-        RunSourceHandler handler = new RunSourceHandler(compiler, executer, new CalTimeDTO(), hackers);
+        RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
         Parameters pars0 = new Parameters();
         try {
             handler.runSourceJava(

@@ -55,10 +55,11 @@ public class DynamicCodeAutoConfiguration {
 
     public Map<String, String> hacker() {
         if (properties.getHacker() == null) {
-            Map<String, String> defaultHackers = new HashMap<>();
-            defaultHackers.put("java/io/File", "com/zhg2yqq/wheels/dynamic/code/hack/HackFile");
-            return defaultHackers;
+            Map<String, String> hackers = new HashMap<>();
+            hackers.put("java/io/File", "com/zhg2yqq/wheels/dynamic/code/hack/HackFile");
+            return hackers;
+        } else {
+            return properties.getHacker();
         }
-        return properties.getHacker();
     }
 }

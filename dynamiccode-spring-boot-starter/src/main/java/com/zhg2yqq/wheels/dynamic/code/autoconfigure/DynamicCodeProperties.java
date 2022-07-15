@@ -22,7 +22,9 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "dynamic.code")
 public class DynamicCodeProperties {
     /**
-     * 替换代码中风险类（key:待替换的类名,例如:java/io/File，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackFile）
+     * 替换代码中风险类
+     * （key:待替换的类名,例如:java/io/File，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackFile）
+     * （也可key:待替换的类名,例如:java.io.File，value:替换成的类名,例如:com.zhg2yqq.wheels.dynamic.code.hack.HackFile）
      */
     private Map<String, String> hacker;
     /**

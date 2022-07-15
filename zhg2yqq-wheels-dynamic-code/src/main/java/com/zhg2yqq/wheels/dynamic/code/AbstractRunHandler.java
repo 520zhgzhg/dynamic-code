@@ -4,6 +4,7 @@
  */
 package com.zhg2yqq.wheels.dynamic.code;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
@@ -59,13 +60,21 @@ public abstract class AbstractRunHandler {
      * @param runner 执行器
      * @param calTime 统计耗时条件
      * @param hackers
-     *            安全替换（key:待替换的类名,例如:java/lang/System，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackSystem）
+     *            安全替换（key:待替换的类名,例如:java/lang/System(也可java.lang.System)，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackSystem(也可com.zhg2yqq.wheels.dynamic.code.hack.HackSystem)）
      */
     public AbstractRunHandler(IStringCompiler compiler, IClassExecuter executer, CalTimeDTO calTime,
             Map<String, String> hackers) {
         this.compiler = compiler;
         this.executer = executer;
-        this.hackers = hackers;
+        if (hackers != null) {
+            Map<String, String> hks = new HashMap<>();
+            for (Entry<String, String> hacker : hackers.entrySet()) {
+                String key = hacker.getKey();
+                String value = hacker.getValue();
+                hks.put(key.replaceAll("\\.", "/"), value.replaceAll("\\.", "/"));
+            }
+            this.hackers = hks;
+        }
         this.calTime = calTime;
     }
 
