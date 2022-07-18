@@ -17,7 +17,8 @@ import java.io.PrintStream;
 public class HackPrintStream extends PrintStream {
 
     private ThreadLocal<ByteArrayOutputStream> out;
-    private ThreadLocal<Boolean> trouble;//每个标准输出流执行过程中是否拋异常
+    // 每个标准输出流执行过程中是否拋异常
+    private ThreadLocal<Boolean> trouble;
 
     public HackPrintStream() {
         super(new ByteArrayOutputStream());
@@ -34,8 +35,9 @@ public class HackPrintStream extends PrintStream {
      * Check to make sure that the stream has not been closed
      */
     private void ensureOpen() throws IOException {
-        if (out.get() == null)
+        if (out.get() == null) {
             out.set(new ByteArrayOutputStream());
+        }
     }
 
     public void flush() {
@@ -58,8 +60,9 @@ public class HackPrintStream extends PrintStream {
     }
 
     public boolean checkError() {
-        if (out.get() != null)
+        if (out.get() != null) {
             flush();
+        }
         return trouble.get() != null ? trouble.get() : false;
     }
 

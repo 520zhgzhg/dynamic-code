@@ -24,15 +24,15 @@ import com.zhg2yqq.wheels.dynamic.code.util.ClassModifier;
  * @author 周海刚, 2022年7月13日
  */
 public abstract class AbstractRunHandler {
-    /*
+    /**
      * 编译器
      */
     private IStringCompiler compiler;
-    /*
+    /**
      * 执行器
      */
     private IClassExecuter executer;
-    /*
+    /**
      * 安全替换（key:待替换的类全名，value:替换成的类全名）
      */
     private Map<String, String> hackers;

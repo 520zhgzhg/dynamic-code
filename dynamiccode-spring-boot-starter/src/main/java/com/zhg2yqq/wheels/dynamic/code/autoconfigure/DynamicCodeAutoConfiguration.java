@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) zhg2yqq Corp.
+ * All Rights Reserved.
+ */
 package com.zhg2yqq.wheels.dynamic.code.autoconfigure;
 
 import java.util.HashMap;
@@ -17,6 +21,12 @@ import com.zhg2yqq.wheels.dynamic.code.autoconfigure.DynamicCodeProperties.RunSo
 import com.zhg2yqq.wheels.dynamic.code.core.ClassExecuter;
 import com.zhg2yqq.wheels.dynamic.code.core.StringJavaCompiler;
 
+/**
+ * 自动配置
+ *
+ * @version zhg2yqq v1.0
+ * @author 周海刚, 2022年7月18日
+ */
 @Configuration
 @EnableConfigurationProperties(DynamicCodeProperties.class)
 public class DynamicCodeAutoConfiguration {
@@ -55,7 +65,7 @@ public class DynamicCodeAutoConfiguration {
 
     public Map<String, String> hacker() {
         if (properties.getHacker() == null) {
-            Map<String, String> hackers = new HashMap<>();
+            Map<String, String> hackers = new HashMap<>(1);
             hackers.put("java/io/File", "com/zhg2yqq/wheels/dynamic/code/hack/HackFile");
             return hackers;
         } else {

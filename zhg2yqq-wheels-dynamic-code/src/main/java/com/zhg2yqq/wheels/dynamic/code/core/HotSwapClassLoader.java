@@ -15,7 +15,9 @@ import com.zhg2yqq.wheels.dynamic.code.exception.ClassLoadException;
  * @author 周海刚, 2022年7月8日
  */
 public class HotSwapClassLoader extends ClassLoader implements IClassLoader {
-    // 使用指定的父类加载器创建一个新的类加载器进行委派
+    /**
+     * 使用指定的父类加载器创建一个新的类加载器进行委派
+     */
     public HotSwapClassLoader() {
         super(HotSwapClassLoader.class.getClassLoader());
     }

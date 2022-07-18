@@ -24,9 +24,9 @@ public final class HackSystem {
     private HackSystem() {
     }
 
-    public final static InputStream in = new HackInputStream();
-    public final static PrintStream out = new HackPrintStream();
-    public final static PrintStream err = out;
+    public static final InputStream in = new HackInputStream();
+    public static final PrintStream out = new HackPrintStream();
+    public static final PrintStream err = out;
 
     /**
      * 获取当前线程输出流中的内容
