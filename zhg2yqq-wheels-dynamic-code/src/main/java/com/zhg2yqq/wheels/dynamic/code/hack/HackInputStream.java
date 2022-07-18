@@ -14,19 +14,23 @@ import java.io.InputStream;
  * @author 周海刚, 2022年7月12日
  */
 public class HackInputStream extends InputStream {
-    public static final ThreadLocal<InputStream> privateInputStream = new ThreadLocal<>();
+    public static final ThreadLocal<InputStream> PRIVATE_INPUT_STREAM = new ThreadLocal<>();
+
     @Override
     public int read() throws IOException {
         return 0;
     }
-    public void set(String systemIn){
-        privateInputStream.set(new ByteArrayInputStream(systemIn.getBytes()));
+
+    public void set(String systemIn) {
+        PRIVATE_INPUT_STREAM.set(new ByteArrayInputStream(systemIn.getBytes()));
     }
-    public InputStream get(){
-        return privateInputStream.get();
+
+    public InputStream get() {
+        return PRIVATE_INPUT_STREAM.get();
     }
+
     @Override
-    public void close(){
-        privateInputStream.remove();
+    public void close() {
+        PRIVATE_INPUT_STREAM.remove();
     }
 }

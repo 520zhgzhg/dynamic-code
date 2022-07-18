@@ -24,7 +24,7 @@ import com.zhg2yqq.wheels.dynamic.code.util.ClassUtils;
  * @author 周海刚, 2022年7月8日
  */
 public class RunClassHandler extends AbstractRunHandler {
-    /*
+    /**
      * 缓存类
      */
     private Map<String, Class<?>> loadedClasses = new ConcurrentHashMap<>();

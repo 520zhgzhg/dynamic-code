@@ -17,12 +17,23 @@ import com.zhg2yqq.wheels.dynamic.code.dto.Parameters.Parameter;
 
 /**
  * 类工具，包含根据源码获取类全名、执行类方法
+ * 
  * @version zhg2yqq v1.0
  * @author 周海刚, 2022年7月8日
  */
 public class ClassUtils {
     /**
+     * package名正则表达式
+     */
+    private static final Pattern PACKAGE_NAME_PATTERN = Pattern.compile("package\\s+\\S+\\s*;");
+    /**
+     * class名正则表达式
+     */
+    private static final Pattern CLASS_NAME_PATTERN = Pattern.compile("class\\s+\\S+\\s+\\{");
+
+    /**
      * 调用类中方法
+     * 
      * @param clazz 类
      * @param methodName 方法名
      * @param args 方法参数
@@ -62,7 +73,7 @@ public class ClassUtils {
         }
         return method.invoke(target, values);
     }
-    
+
     /**
      * 获取类的全名称
      *
@@ -71,14 +82,12 @@ public class ClassUtils {
      */
     public static String getFullClassName(String sourceCode) {
         String className = "";
-        Pattern pattern = Pattern.compile("package\\s+\\S+\\s*;");
-        Matcher matcher = pattern.matcher(sourceCode);
+        Matcher matcher = PACKAGE_NAME_PATTERN.matcher(sourceCode);
         if (matcher.find()) {
             className = matcher.group().replaceFirst("package", "").replace(";", "").trim() + ".";
         }
 
-        pattern = Pattern.compile("class\\s+\\S+\\s+\\{");
-        matcher = pattern.matcher(sourceCode);
+        matcher = CLASS_NAME_PATTERN.matcher(sourceCode);
         if (matcher.find()) {
             className += matcher.group().replaceFirst("class", "").replace("{", "").trim();
         }
