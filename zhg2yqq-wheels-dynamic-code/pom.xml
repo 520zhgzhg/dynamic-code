@@ -21,12 +21,12 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
-	<!-- SCM信息 ->  -->
-    <scm>
-        <connection>scm:git:git://github.com/520zhgzhg/dynamic-code.git</connection>
-        <developerConnection>scm:git:ssh://github.com/520zhgzhg/dynamic-code.git</developerConnection>
-        <url>https://github.com/520zhgzhg/dynamic-code.git</url>
-    </scm>
+	<!-- SCM信息 -->
+	<scm>
+		<connection>scm:git:git://github.com/520zhgzhg/dynamic-code.git</connection>
+		<developerConnection>scm:git:ssh://github.com/520zhgzhg/dynamic-code.git</developerConnection>
+		<url>https://github.com/520zhgzhg/dynamic-code.git</url>
+	</scm>
 	<!-- 开发者信息 -->
 	<developers>
 		<developer>
@@ -102,7 +102,7 @@
 
 	<profiles>
 		<profile>
-		    <!-- 编译命令示例：mvn clean deploy -P release -settings C:\apache-maven-3.6.0\conf\settings_aliyun.xml -->
+			<!-- 编译命令示例：mvn clean deploy -P release -settings C:\apache-maven-3.6.0\conf\settings_aliyun.xml -->
 			<id>release</id>
 			<build>
 				<plugins>
