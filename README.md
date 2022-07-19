@@ -18,7 +18,7 @@ pom中引入jar包
     <dependency>
         <groupId>com.zhg2yqq</groupId>
         <artifactId>wheels-dynamic-code</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.8.0</version>
     </dependency>
 ```
 根据实际需求创建执行源码方法类,先创建以下构造实例必要参数。
@@ -49,7 +49,7 @@ pom中引入jar包
     <dependency>
         <groupId>com.zhg2yqq</groupId>
         <artifactId>dynamiccode-spring-boot-starter</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.8.0</version>
     </dependency>
 ```
 application.properties可配置项
