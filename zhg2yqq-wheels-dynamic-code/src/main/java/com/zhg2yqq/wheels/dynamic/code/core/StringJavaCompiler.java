@@ -4,8 +4,15 @@
  */
 package com.zhg2yqq.wheels.dynamic.code.core;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -19,6 +26,7 @@ import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.CompileResult;
 import com.zhg2yqq.wheels.dynamic.code.dto.StringJavaFileObject;
 import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
+import com.zhg2yqq.wheels.dynamic.code.util.IOUtils;
 
 /**
  * 源码编译
@@ -27,18 +35,50 @@ import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
  * @author 周海刚, 2022年7月8日
  */
 public class StringJavaCompiler implements IStringCompiler {
+    private Logger log = Logger.getLogger(StringJavaCompiler.class.getName());
     // 获取java的编译器
-    private static JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+    private JavaCompiler compiler;
 
-    static {
-        if (compiler == null) {
+    public StringJavaCompiler() {
+        this(null);
+    }
+
+    public StringJavaCompiler(URL jdkToolUrl) {
+        URL loadUrl = jdkToolUrl;
+        if (loadUrl == null) {
+            // 获取java的编译器
+            compiler = ToolProvider.getSystemJavaCompiler();
+        } else {
             try {
-                Class<?> javacTool = Class.forName("com.sun.tools.javac.api.JavacTool");
-                Method create = javacTool.getMethod("create");
-                compiler = (JavaCompiler) create.invoke(null);
+                // 加载自定义tools中的编译器
+                compiler = loadJavaCompiler(loadUrl);
             } catch (Exception e) {
-                throw new AssertionError(e);
+                log.log(Level.WARNING, e.getMessage(), e);
             }
+        }
+
+        if (compiler == null) {
+            // 利用框架自带tools包，兜底创建编译器
+            try {
+                // 创建临时暂存tools.jar
+                InputStream in = StringJavaCompiler.class.getClassLoader()
+                        .getResourceAsStream("lib/tools-1.8.jar");
+                String tempPath = System.getProperty("java.io.tmpdir");
+                File tmpJar = new File(tempPath, "dynamic_tools_1.8.jat");
+                loadUrl = tmpJar.toURI().toURL();
+                if (!tmpJar.exists()) {
+                    FileOutputStream out = new FileOutputStream(tmpJar);
+                    IOUtils.copyByNIO(in, out, 2 << 10);
+                }
+                // 加载临时工具包
+                compiler = loadJavaCompiler(loadUrl);
+            } catch (Exception e) {
+                log.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+
+        if (compiler == null) {
+            throw new AssertionError("无法获取编译器，原始路径：" + jdkToolUrl + "，加载路径：" + loadUrl);
         }
     }
 
@@ -49,10 +89,11 @@ public class StringJavaCompiler implements IStringCompiler {
      * @param sourceCode 源码字符串内容
      * @param calTime 统计耗时条件
      * @return CompileResult 编译后的结果
-     * @throws CompileException 
+     * @throws CompileException
      */
     @Override
-    public CompileResult compile(String fullClassName, String sourceCode, CalTimeDTO calTime) throws CompileException {
+    public CompileResult compile(String fullClassName, String sourceCode, CalTimeDTO calTime)
+        throws CompileException {
         long compilerTakeTime = -1;
         boolean compileSuccess;
         // 存放编译过程中输出的信息
@@ -75,6 +116,11 @@ public class StringJavaCompiler implements IStringCompiler {
         throw new CompileException(diagnosticsCollector);
     }
 
+    @Override
+    public JavaCompiler getCompiler() {
+        return compiler;
+    }
+
     /**
      * 核心编译
      * 
@@ -84,8 +130,8 @@ public class StringJavaCompiler implements IStringCompiler {
      * @return 是否编译成功
      */
     protected boolean compile(String sourceCode,
-                            DiagnosticCollector<JavaFileObject> diagnosticsCollector,
-                            CompileResult result) {
+                              DiagnosticCollector<JavaFileObject> diagnosticsCollector,
+                              CompileResult result) {
         // 标准的内容管理器,更换成自己的实现，覆盖部分方法
         StandardJavaFileManager standardFileManager = compiler
                 .getStandardFileManager(diagnosticsCollector, null, null);
@@ -94,10 +140,22 @@ public class StringJavaCompiler implements IStringCompiler {
         JavaFileObject javaFileObject = new StringJavaFileObject(result.getFullClassName(),
                 sourceCode);
         // 获取一个编译任务
-        JavaCompiler.CompilationTask task = compiler.getTask(null, javaFileManager,
+        JavaCompiler.CompilationTask task = getCompiler().getTask(null, javaFileManager,
                 diagnosticsCollector, null, null, Arrays.asList(javaFileObject));
         // TODO 后期扩展支持Processors，实现类似Lombok功能
 //        task.setProcessors(processors);
         return task.call();
+    }
+
+    private JavaCompiler loadJavaCompiler(URL toolUrl) throws Exception {
+        // 加载工具包
+        URL[] urls = { toolUrl };
+        URLClassLoader loader = new URLClassLoader(urls);
+        // 获取编译工具类
+        Class<?> javacTool = Class.forName("com.sun.tools.javac.api.JavacTool", true, loader);
+        // 获取创建编译器方法
+        Method create = javacTool.getMethod("create");
+        // 获取编译器
+        return (JavaCompiler) create.invoke(null);
     }
 }
