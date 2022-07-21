@@ -4,6 +4,8 @@
  */
 package com.zhg2yqq.wheels.dynamic.code;
 
+import javax.tools.JavaCompiler;
+
 import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.CompileResult;
 import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
@@ -26,4 +28,10 @@ public interface IStringCompiler {
      */
     CompileResult compile(String fullClassName, String sourceCode, CalTimeDTO calTime)
         throws CompileException;
+    
+    /**
+     * 获取编译器
+     * @return
+     */
+    JavaCompiler getCompiler();
 }

@@ -8,9 +8,9 @@
 	<artifactId>wheels-dynamic-code</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<!-- 快照版本 -->
-	<!-- <version>1.8.0-SNAPSHOT</version> -->
+	<!-- <version>1.8.1-SNAPSHOT</version> -->
 	<!-- 正式版本 -->
-	<version>1.8.0</version>
+	<version>1.8.1</version>
 	<description>Java8 Dynamic Code in anywhere</description>
 	<url>https://github.com/520zhgzhg</url>
 	<!-- 许可证信息 -->
@@ -48,13 +48,6 @@
 			<version>1.4.2</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.tools</groupId>
-			<artifactId>tools</artifactId>
-			<version>1.8.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/tools.jar</systemPath>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
@@ -66,6 +59,8 @@
 		<resources>
 			<resource>
 				<directory>lib</directory>
+				<targetPath>lib</targetPath>
+				<filtering>false</filtering>
 				<includes>
 					<include>**/*.jar</include>
 				</includes>
@@ -79,14 +74,20 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<encoding>utf-8</encoding>
-					<verbose>true</verbose>
-					<fork>true</fork>
 					<compilerArguments>
-						<extdirs>lib</extdirs>
+						<extdirs>${basedir}/lib</extdirs>
 					</compilerArguments>
-					<compilerArgs>
-						<compilerArg>-parameters</compilerArg>
-					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Built-By>zhg2yqq</Built-By>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 			<plugin>
