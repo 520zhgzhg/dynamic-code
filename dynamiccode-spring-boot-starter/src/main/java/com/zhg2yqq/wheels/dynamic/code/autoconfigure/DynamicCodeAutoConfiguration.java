@@ -4,6 +4,8 @@
  */
 package com.zhg2yqq.wheels.dynamic.code.autoconfigure;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +40,12 @@ public class DynamicCodeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public IStringCompiler stringCompiler() {
-        return new StringJavaCompiler();
+    public IStringCompiler stringCompiler() throws MalformedURLException {
+        URL jdkToolUrl = null;
+        if (properties.getJdkToolUrl() != null && !properties.getJdkToolUrl().isEmpty()) {
+            jdkToolUrl = new URL(properties.getJdkToolUrl());
+        }
+        return new StringJavaCompiler(jdkToolUrl);
     }
 
     @Bean

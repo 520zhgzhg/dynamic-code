@@ -13,6 +13,9 @@ import com.zhg2yqq.wheels.dynamic.code.core.HotSwapClassLoader;
 import com.zhg2yqq.wheels.dynamic.code.dto.ByteJavaFileObject;
 import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.CompileResult;
+import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
+import com.zhg2yqq.wheels.dynamic.code.dto.Parameters;
+import com.zhg2yqq.wheels.dynamic.code.exception.BaseDynamicException;
 import com.zhg2yqq.wheels.dynamic.code.exception.ClassLoadException;
 import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
 import com.zhg2yqq.wheels.dynamic.code.util.ClassModifier;
@@ -20,10 +23,11 @@ import com.zhg2yqq.wheels.dynamic.code.util.ClassModifier;
 /**
  * 执行器公共方法
  * 
+ * @param <R> 执行结果类型
  * @version zhg2yqq v1.0
  * @author 周海刚, 2022年7月13日
  */
-public abstract class AbstractRunHandler {
+public abstract class AbstractRunHandler<R extends ExecuteResult> {
     /**
      * 编译器
      */
@@ -31,7 +35,7 @@ public abstract class AbstractRunHandler {
     /**
      * 执行器
      */
-    private IClassExecuter executer;
+    private IClassExecuter<R> executer;
     /**
      * 安全替换（key:待替换的类全名，value:替换成的类全名）
      */
@@ -48,7 +52,7 @@ public abstract class AbstractRunHandler {
      * @param executer 执行器
      * @param calTime 统计耗时条件
      */
-    public AbstractRunHandler(IStringCompiler compiler, IClassExecuter executer,
+    public AbstractRunHandler(IStringCompiler compiler, IClassExecuter<R> executer,
             CalTimeDTO calTime) {
         this(compiler, executer, calTime, null);
     }
@@ -57,13 +61,13 @@ public abstract class AbstractRunHandler {
      * 处理程序
      * 
      * @param compiler 编译器
-     * @param runner 执行器
+     * @param executer 执行器
      * @param calTime 统计耗时条件
      * @param hackers
      *            安全替换（key:待替换的类名,例如:java/lang/System(也可java.lang.System)，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackSystem(也可com.zhg2yqq.wheels.dynamic.code.hack.HackSystem)）
      */
-    public AbstractRunHandler(IStringCompiler compiler, IClassExecuter executer, CalTimeDTO calTime,
-            Map<String, String> hackers) {
+    public AbstractRunHandler(IStringCompiler compiler, IClassExecuter<R> executer,
+            CalTimeDTO calTime, Map<String, String> hackers) {
         this.compiler = compiler;
         this.executer = executer;
         if (hackers != null) {
@@ -79,14 +83,42 @@ public abstract class AbstractRunHandler {
     }
 
     /**
+     * 执行Java方法（非单例模式执行）
+     * 
+     * @param sourceOrClass 源码或类名
+     * @param methodName 方法名，例如getTime
+     * @param parameters 方法参数
+     * @return 方法执行结果
+     * @throws BaseDynamicException .
+     */
+    public R runMethod(String sourceOrClass, String methodName, Parameters parameters)
+        throws BaseDynamicException {
+        return this.runMethod(sourceOrClass, methodName, parameters, false);
+    }
+
+    /**
+     * 执行Java方法
+     * 
+     * @param sourceOrClass 源码或类名
+     * @param methodName 方法名，例如getTime
+     * @param parameters 方法参数
+     * @param singleton 是否单例执行
+     * @return 方法执行结果
+     * @throws BaseDynamicException .
+     */
+    public abstract R runMethod(String sourceOrClass, String methodName, Parameters parameters,
+                                boolean singleton)
+        throws BaseDynamicException;
+
+    /**
      * 加载Class
      * 
      * @param fullClassName 类全名
      * @param sourceStr 源码
      * @param classLoader .
      * @return class类
-     * @throws ClassLoadException
-     * @throws CompileException
+     * @throws ClassLoadException .
+     * @throws CompileException .
      */
     protected Class<?> loadClass(String fullClassName, String sourceStr, IClassLoader classLoader)
         throws CompileException, ClassLoadException {
@@ -99,8 +131,8 @@ public abstract class AbstractRunHandler {
      * @param fullClassName 类全名
      * @param sourceStr 源码
      * @return class类
-     * @throws ClassLoadException
-     * @throws CompileException
+     * @throws ClassLoadException .
+     * @throws CompileException .
      */
     protected Class<?> loadClass(String fullClassName, String sourceStr)
         throws CompileException, ClassLoadException {
@@ -130,7 +162,7 @@ public abstract class AbstractRunHandler {
         return compiler;
     }
 
-    public IClassExecuter getExecuter() {
+    public IClassExecuter<R> getExecuter() {
         return executer;
     }
 

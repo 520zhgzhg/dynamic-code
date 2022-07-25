@@ -38,7 +38,7 @@ public class RunHandlerTest {
         CalTimeDTO calTime = new CalTimeDTO();
         calTime.setCalExecuteTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
-        IClassExecuter executer = new ClassExecuter();
+        IClassExecuter<ExecuteResult> executer = new ClassExecuter();
 
         System.out.println("预编译测试 start");
         RunClassHandler handler = new RunClassHandler(compiler, executer, calTime, hackers);
@@ -78,19 +78,18 @@ public class RunHandlerTest {
         Parameters args0 = new Parameters();
         String[] pars0 = new String[0];
         args0.add(pars0);
-        ExecuteResult result0 = handler.runClassJava("com.zhg2yqq.bill.Test", "main", args0);
+        ExecuteResult result0 = handler.runMethod("com.zhg2yqq.bill.Test", "main", args0);
         Assert.assertNull(result0.getReturnVal());
 
         Parameters pars1 = new Parameters();
         pars1.add("    测试1     ");
-        ExecuteResult result1 = handler.runClassJava("com.zhg2yqq.wheels.dynamic.code.CodeTemplate", "trimStr",
+        ExecuteResult result1 = handler.runMethod("com.zhg2yqq.wheels.dynamic.code.CodeTemplate", "trimStr",
                 pars1);
         Assert.assertEquals("测试1", result1.getReturnVal());
 
-        // 重新编译加载源码类
         Parameters pars2 = new Parameters();
         pars2.add("  zhg2yqq  测试2");
-        ExecuteResult result2 = handler.runClassJava("com.zhg2yqq.wheels.dynamic.code.CodeTemplate", "trimStr",
+        ExecuteResult result2 = handler.runMethod("com.zhg2yqq.wheels.dynamic.code.CodeTemplate", "trimStr",
                 pars2);
         Assert.assertEquals("zhg2yqq  测试2", result2.getReturnVal());
 
@@ -107,7 +106,7 @@ public class RunHandlerTest {
         CalTimeDTO calTime = new CalTimeDTO();
         calTime.setCalCompileTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
-        IClassExecuter executer = new ClassExecuter();
+        IClassExecuter<ExecuteResult> executer = new ClassExecuter();
 
         System.out.println("源码测试 start");
         RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
@@ -116,7 +115,7 @@ public class RunHandlerTest {
         Parameters args0 = new Parameters();
         String[] pars0 = new String[0];
         args0.add(pars0);
-        ExecuteResult result0 = handler.runSourceJava("/*\r\n" 
+        ExecuteResult result0 = handler.runMethod("/*\r\n" 
                 + " * Copyright (c) zhg2yqq Corp.\r\n" 
                 + " * All Rights Reserved.\r\n"
                 + " */\r\n" 
@@ -141,7 +140,7 @@ public class RunHandlerTest {
 
         Parameters pars1 = new Parameters();
         pars1.add("    测试1     ");
-        ExecuteResult result1 = handler.runSourceJava("package com.zhg2yqq.wheels.dynamic.code;\r\n"
+        ExecuteResult result1 = handler.runMethod("package com.zhg2yqq.wheels.dynamic.code;\r\n"
                 + "public class CodeTemplate {\r\n"
                 + "    public String trimStr(String str) {\r\n"
                 + "        return str.trim();\r\n" 
@@ -153,17 +152,17 @@ public class RunHandlerTest {
         // 重新编译加载源码类
         Parameters pars2 = new Parameters();
         pars2.add("    测试2     ");
-        ExecuteResult result2 = handler.runSourceJava(
+        ExecuteResult result2 = handler.runMethod(
                 "package com.zhg2yqq.wheels.dynamic.code;\r\n" 
                 + "public class CodeTemplate {\r\n"
                 + "    public String trimStr(String str) {\r\n"
                 + "        return str + \"zhg2yqq\";\r\n" 
                 + "    }\r\n" 
                 + "}",
-                "trimStr", pars2, true);
+                "trimStr", pars2, false, true);
         Assert.assertEquals("    测试2     zhg2yqq", result2.getReturnVal());
 
-        result1 = handler.runSourceJava("package com.zhg2yqq.wheels.dynamic.code;\r\n"
+        result1 = handler.runMethod("package com.zhg2yqq.wheels.dynamic.code;\r\n"
                 + "public class CodeTemplate {\r\n"
                 + "    public String trimStr(String str) {\r\n"
                 + "        return str.trim();\r\n" 
@@ -180,13 +179,13 @@ public class RunHandlerTest {
         hackers.put("java/io/File", "com/zhg2yqq/wheels/dynamic/code/hack/HackFile");
         CalTimeDTO calTime = new CalTimeDTO();
         IStringCompiler compiler = new StringJavaCompiler();
-        IClassExecuter executer = new ClassExecuter();
+        IClassExecuter<ExecuteResult> executer = new ClassExecuter();
 
         System.out.println("hack测试 start");
         RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
         Parameters pars0 = new Parameters();
         try {
-            handler.runSourceJava(
+            handler.runMethod(
                 "package com.zhg2yqq.wheels.dynamic.code;\r\n" 
                 + "import java.io.File;\r\n"
                 + "public class FileTest {\r\n"
@@ -208,13 +207,13 @@ public class RunHandlerTest {
     public void testCompileException() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
         IStringCompiler compiler = new StringJavaCompiler();
-        IClassExecuter executer = new ClassExecuter();
+        IClassExecuter<ExecuteResult> executer = new ClassExecuter();
 
         System.out.println("编译异常测试 start");
         RunSourceHandler handler = new RunSourceHandler(compiler, executer, new CalTimeDTO(), hackers);
         Parameters pars0 = new Parameters();
         try {
-            handler.runSourceJava(
+            handler.runMethod(
                 "package com.zhg2yqq.wheels.dynamic.code;\r\n" 
                 + "import java.io.File;\r\n"
                 + "public class FileTest {\r\n"
@@ -237,13 +236,13 @@ public class RunHandlerTest {
         Map<String, String> hackers = new HashMap<>();
         CalTimeDTO calTime = new CalTimeDTO();
         IStringCompiler compiler = new StringJavaCompiler();
-        IClassExecuter executer = new ClassExecuter();
+        IClassExecuter<ExecuteResult> executer = new ClassExecuter();
 
         System.out.println("源码运行异常测试 start");
         RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
         Parameters pars0 = new Parameters();
         try {
-            handler.runSourceJava(
+            handler.runMethod(
                 "package com.zhg2yqq.wheels.dynamic.code;\r\n" 
                 + "public class ExecuteTest {\r\n"
                 + "    public void calc() {\r\n"
