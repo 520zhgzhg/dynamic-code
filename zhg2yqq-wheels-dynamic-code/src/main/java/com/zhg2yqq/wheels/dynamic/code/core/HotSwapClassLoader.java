@@ -8,7 +8,8 @@ import com.zhg2yqq.wheels.dynamic.code.IClassLoader;
 import com.zhg2yqq.wheels.dynamic.code.exception.ClassLoadException;
 
 /**
- * 为了多次载入执行类而加入的加载器 设计一个loadByte()方法将defineClass()方法开放出来，只有我们调用loadByte()方法时才使用自己的类加载器
+ * 为了多次载入执行类而加入的加载器
+ * 设计一个loadByte()方法将defineClass()方法开放出来，只有我们调用loadByte()方法时才使用自己的类加载器
  * 虚拟机调用HotSwapClassLoader时还是按照双亲委派模型使用loadClass方法进行类加载
  * 
  * @version zhg2yqq v1.0

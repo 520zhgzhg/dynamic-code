@@ -7,10 +7,7 @@
 	<groupId>com.zhg2yqq</groupId>
 	<artifactId>wheels-dynamic-code</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<!-- 快照版本 -->
-	<!-- <version>1.8.1-SNAPSHOT</version> -->
-	<!-- 正式版本 -->
-	<version>1.8.1</version>
+	<version>1.8.1${versionSuffix}</version>
 	<description>Java8 Dynamic Code in anywhere</description>
 	<url>https://github.com/520zhgzhg</url>
 	<!-- 许可证信息 -->
@@ -58,6 +55,11 @@
 	<build>
 		<resources>
 			<resource>
+				<directory>src/main/resources</directory>
+				<!-- 是否开启过滤替换配置，默认是不开启的 -->
+				<filtering>true</filtering>
+			</resource>
+			<resource>
 				<directory>lib</directory>
 				<targetPath>lib</targetPath>
 				<filtering>false</filtering>
@@ -103,8 +105,20 @@
 
 	<profiles>
 		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<versionSuffix>-SNAPSHOT</versionSuffix>
+			</properties>
+		</profile>
+		<profile>
 			<!-- 编译命令示例：mvn clean deploy -P release -settings C:\apache-maven-3.6.0\conf\settings_aliyun.xml -->
 			<id>release</id>
+			<properties>
+				<versionSuffix></versionSuffix>
+			</properties>
 			<build>
 				<plugins>
 					<!-- source包 -->
@@ -141,6 +155,91 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<!-- 简化版，不含自带的tools.jar包，减小体积。但运行时，必须指定自己tools.jar的路径或者环境中必需有JDK -->
+			<!-- 编译命令示例：mvn clean deploy -P lite -settings C:\apache-maven-3.6.0\conf\settings_aliyun.xml -->
+			<id>lite</id>
+			<properties>
+				<versionSuffix>-LITE</versionSuffix>
+			</properties>
+			<build>
+				<plugins>
+					<!--排除resources文件夹 -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>lib</directory>
+									<excludes>
+										<exclude>**/*.jar</exclude>
+									</excludes>
+								</resource>
+							</resources>
+						</configuration>
+					</plugin>
+					<!-- source包 -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<configuration>
+							<attach>true</attach>
+							<excludes>
+								<exclude>**/*.jar</exclude>
+							</excludes>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- 生成doc文档 -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<charset>UTF-8</charset>
+							<encoding>UTF-8</encoding>
+							<docencoding>UTF-8</docencoding>
+							<additionalOptions>-Xdoclint:none</additionalOptions>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<skipTests>true</skipTests>
+						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>

@@ -27,6 +27,7 @@ import com.zhg2yqq.wheels.dynamic.code.util.ClassUtils;
  * @author 周海刚, 2022年7月8日
  */
 public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
+    private static final int DEFAULT_CACHE_SIZE = 100;
     /**
      * 缓存类
      */
@@ -54,7 +55,7 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
      */
     public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime,
             Map<String, String> hackers) {
-        this(compiler, executer, calTime, hackers, 100);
+        this(compiler, executer, calTime, hackers, DEFAULT_CACHE_SIZE);
     }
 
     /**
@@ -90,7 +91,7 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
     /**
      * 执行Java方法
      * 
-     * @param sourceOrClass 源码
+     * @param source 源码
      * @param methodName 方法名，例如getTime
      * @param parameters 方法参数
      * @param singleton 是否单例执行
@@ -106,7 +107,7 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
     /**
      * 执行Java方法
      * 
-     * @param sourceOrClass 源码
+     * @param source 源码
      * @param methodName 方法名，例如getTime
      * @param parameters 方法参数
      * @param singleton 是否单例执行
@@ -136,7 +137,7 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
      * @param methodName 方法名
      * @param parameters 方法参数
      * @return 方法执行结果
-     * @throws BaseDynamicException
+     * @throws BaseDynamicException .
      */
     @Deprecated
     public ExecuteResult runSourceJava(String source, String methodName, Parameters parameters)
@@ -151,10 +152,9 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
      * @param source 源码
      * @param methodName 方法名
      * @param parameters 方法参数
-     * @param singleton 是否单例执行
      * @param reloadClass 是否重新编译加载类
      * @return 方法执行结果
-     * @throws BaseDynamicException
+     * @throws BaseDynamicException .
      */
     @Deprecated
     public ExecuteResult runSourceJava(String source, String methodName, Parameters parameters,
@@ -167,10 +167,10 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
      * 加载Class，如果重复加载Class类，将直接返回之前的Class。
      * 每个class都对应独立的ClassLoader
      * 
-     * @param sourceStr
-     * @return
-     * @throws CompileException
-     * @throws ClassLoadException
+     * @param sourceStr 源码
+     * @return 类
+     * @throws CompileException .
+     * @throws ClassLoadException .
      */
     public ClassBean<?> loadClassFromSource(String sourceStr)
         throws CompileException, ClassLoadException {
@@ -199,10 +199,10 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
      * 重新加载Class，如果存在原始Class将会覆盖，返回新Class。
      * 因同一个ClassLoader实例不能重复加载相同类，所以这里每个class都对应独立的ClassLoader
      * 
-     * @param sourceStr
-     * @return
-     * @throws ClassLoadException
-     * @throws CompileException
+     * @param sourceStr 源码
+     * @return 类
+     * @throws CompileException .
+     * @throws ClassLoadException .
      */
     public ClassBean<?> reloadClassFromSource(String sourceStr)
         throws CompileException, ClassLoadException {

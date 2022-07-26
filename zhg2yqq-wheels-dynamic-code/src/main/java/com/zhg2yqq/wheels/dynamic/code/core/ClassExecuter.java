@@ -12,37 +12,16 @@ import com.zhg2yqq.wheels.dynamic.code.dto.ClassBean;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteCondition;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteParameter;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
-import com.zhg2yqq.wheels.dynamic.code.dto.Parameters;
 import com.zhg2yqq.wheels.dynamic.code.exception.ExecuteException;
 import com.zhg2yqq.wheels.dynamic.code.util.ClassUtils;
 
 /**
  * 源码编译
  * 
- * @param <R> 方法执行结果
  * @version zhg2yqq v1.0
  * @author 周海刚, 2022年7月8日
  */
 public class ClassExecuter implements IClassExecuter<ExecuteResult> {
-    /**
-     * 执行main方法
-     * 
-     * @throws ExecuteException
-     */
-    public <E extends ExecuteCondition> ExecuteResult runMainMethod(Class<?> clazz,
-                                                                    E excuteCondition)
-        throws ExecuteException {
-        Parameters args = new Parameters();
-        String[] pars = new String[0];
-        args.add(pars);
-        ExecuteParameter<ClassBean<?>> parameter = new ExecuteParameter<>();
-        ClassBean<?> classBean = new ClassBean<>(clazz);
-        parameter.setClassBean(classBean);
-        parameter.setMethodName("main");
-        parameter.setArgs(args);
-        return this.runMethod(parameter, excuteCondition);
-    }
-
     /**
      * 调用类执行自定义方法
      * 

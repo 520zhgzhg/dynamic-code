@@ -58,8 +58,8 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult> {
      * 必须提前预加载类
      * 
      * @param sourceStrs 源码
-     * @throws ClassLoadException
-     * @throws CompileException
+     * @throws ClassLoadException .
+     * @throws CompileException .
      */
     public void preloadClass(List<String> sourceStrs) throws CompileException, ClassLoadException {
         for (String sourceStr : sourceStrs) {
@@ -101,7 +101,7 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult> {
      * @param methodName 方法名，例如getTime
      * @param parameters 方法参数
      * @return 方法执行结果
-     * @throws BaseDynamicException
+     * @throws BaseDynamicException .
      */
     @Deprecated
     public ExecuteResult runClassJava(String fullClassName, String methodName,

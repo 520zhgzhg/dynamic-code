@@ -22,7 +22,8 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "dynamic.code")
 public class DynamicCodeProperties {
     /**
-     * 自定义编译jar包工具加载URL路径，为空时默认使用工具包自带编译工具（版本为1.8.0_201）
+     * 自定义编译jar包工具加载URL路径，为空时默认使用工具包自带编译工具（版本为1.8.0_201，LITE版本不能为空）
+     * 示例：file:/C:/Program Files/Java/jdk1.8.0_201/lib/tools.jar
      */
     private String jdkToolUrl;
     /**
