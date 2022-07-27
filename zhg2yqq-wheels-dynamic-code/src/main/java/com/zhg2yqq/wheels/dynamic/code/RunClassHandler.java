@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.zhg2yqq.wheels.dynamic.code.core.HotSwapClassLoader;
 import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.ClassBean;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteCondition;
@@ -18,7 +17,6 @@ import com.zhg2yqq.wheels.dynamic.code.dto.Parameters;
 import com.zhg2yqq.wheels.dynamic.code.exception.BaseDynamicException;
 import com.zhg2yqq.wheels.dynamic.code.exception.ClassLoadException;
 import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
-import com.zhg2yqq.wheels.dynamic.code.util.ClassUtils;
 
 /**
  * 执行Java代码，如果系统只需编译一次代码则推荐使用该执行器
@@ -30,11 +28,7 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult> {
     /**
      * 缓存类
      */
-    private Map<String, ClassBean<?>> loadedClasses = new ConcurrentHashMap<>();
-    /**
-     * 统一类加载器
-     */
-    private IClassLoader loader = new HotSwapClassLoader();
+    private Map<String, ClassBean<?>> cacheClasses = new ConcurrentHashMap<>();
 
     public RunClassHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime) {
         this(compiler, executer, calTime, null);
@@ -61,11 +55,9 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult> {
      * @throws ClassLoadException .
      * @throws CompileException .
      */
-    public void preloadClass(List<String> sourceStrs) throws CompileException, ClassLoadException {
+    public void loadClassFromSources(List<String> sourceStrs) throws CompileException, ClassLoadException {
         for (String sourceStr : sourceStrs) {
-            String fullClassName = ClassUtils.getFullClassName(sourceStr);
-            Class<?> clazz = super.loadClass(fullClassName, sourceStr, loader);
-            loadedClasses.put(fullClassName, new ClassBean<>(clazz));
+            this.loadClassFromSource(sourceStr);
         }
     }
 
@@ -83,7 +75,7 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult> {
     public ExecuteResult runMethod(String fullClassName, String methodName, Parameters parameters,
                                    boolean singleton)
         throws BaseDynamicException {
-        ClassBean<?> classBean = loadedClasses.get(fullClassName);
+        ClassBean<?> classBean = this.getClassCache().get(fullClassName);
         if (classBean == null) {
             throw new BaseDynamicException(fullClassName + " 尚未编译源码");
         }
@@ -108,6 +100,11 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult> {
                                       Parameters parameters)
         throws BaseDynamicException {
         return this.runMethod(fullClassName, methodName, parameters);
+    }
+
+    @Override
+    protected Map<String, ClassBean<?>> getClassCache() {
+        return cacheClasses;
     }
 
 }

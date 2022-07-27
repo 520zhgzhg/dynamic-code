@@ -31,7 +31,7 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
     /**
      * 缓存类
      */
-    private final ConcurrentMap<String, ClassBean<?>> loadedClasses;
+    private final ConcurrentMap<String, ClassBean<?>> cacheClasses;
 
     /**
      * 源码处理程序
@@ -84,7 +84,7 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
     public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime,
             Map<String, String> hackers, int cacheSize) {
         super(compiler, executer, calTime, hackers);
-        loadedClasses = new ConcurrentLinkedHashMap.Builder<String, ClassBean<?>>()
+        this.cacheClasses = new ConcurrentLinkedHashMap.Builder<String, ClassBean<?>>()
                 .maximumWeightedCapacity(cacheSize).weigher(Weighers.singleton()).build();
     }
 
@@ -119,9 +119,9 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
                                    boolean singleton, boolean reloadClass) throws BaseDynamicException  {
         ClassBean<?> classBean = null;
         if (reloadClass) {
-            classBean = this.reloadClassFromSource(source);
-        } else {
             classBean = this.loadClassFromSource(source);
+        } else {
+            classBean = this.loadOrginalClassFromSource(source);
         }
         ExecuteParameter<ClassBean<?>> parameter = new ExecuteParameter<>(classBean, methodName, parameters);
         ExecuteCondition condition = new ExecuteCondition(singleton, getCalTime().isCalExecuteTime());
@@ -172,11 +172,11 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
      * @throws CompileException .
      * @throws ClassLoadException .
      */
-    public ClassBean<?> loadClassFromSource(String sourceStr)
+    public ClassBean<?> loadOrginalClassFromSource(String sourceStr)
         throws CompileException, ClassLoadException {
         String fullClassName = ClassUtils.getFullClassName(sourceStr);
         try {
-            return loadedClasses.computeIfAbsent(fullClassName, className -> {
+            return this.getClassCache().computeIfAbsent(fullClassName, className -> {
                 try {
                     Class<?> clazz = loadClass(className, sourceStr);
                     return new ClassBean<>(clazz);
@@ -195,20 +195,8 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
         }
     }
 
-    /**
-     * 重新加载Class，如果存在原始Class将会覆盖，返回新Class。
-     * 因同一个ClassLoader实例不能重复加载相同类，所以这里每个class都对应独立的ClassLoader
-     * 
-     * @param sourceStr 源码
-     * @return 类
-     * @throws CompileException .
-     * @throws ClassLoadException .
-     */
-    public ClassBean<?> reloadClassFromSource(String sourceStr)
-        throws CompileException, ClassLoadException {
-        String fullClassName = ClassUtils.getFullClassName(sourceStr);
-        Class<?> clazz = loadClass(fullClassName, sourceStr);
-        loadedClasses.put(fullClassName, new ClassBean<>(clazz));
-        return loadedClasses.get(fullClassName);
+    @Override
+    protected Map<String, ClassBean<?>> getClassCache() {
+        return cacheClasses;
     }
 }

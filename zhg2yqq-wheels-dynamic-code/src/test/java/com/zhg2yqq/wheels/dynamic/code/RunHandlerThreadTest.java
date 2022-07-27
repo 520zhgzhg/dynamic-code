@@ -53,16 +53,16 @@ public class RunHandlerThreadTest {
         
         // 待预编译源码
         List<String> preloadSources = new ArrayList<>();
-        preloadSources.add("package com.zhg2yqq.wheels.dynamic.code;\r\n"
-                + "public class CodeTemplate {\r\n"
-                + "    private int sum = 0;\r\n"
-                + "    public int add(int num) {\r\n"
-                + "        sum += num;\r\n"
-                + "        return sum;\r\n" 
-                + "    }\r\n" 
+        preloadSources.add("package com.zhg2yqq.wheels.dynamic.code;\n"
+                + "public class CodeTemplate {\n"
+                + "    private int sum = 0;\n"
+                + "    public int add(int num) {\n"
+                + "        sum += num;\n"
+                + "        return sum;\n" 
+                + "    }\n" 
                 + "}");
         // 预编译
-        handler.preloadClass(preloadSources);
+        handler.loadClassFromSources(preloadSources);
 
         int times = 10000;
         // 执行类
@@ -110,14 +110,14 @@ public class RunHandlerThreadTest {
         
         // 待预编译源码
         List<String> preloadSources = new ArrayList<>();
-        preloadSources.add("package com.zhg2yqq.wheels.dynamic.code;\r\n"
-                + "public class CodeTemplate {\r\n"
-                + "    public int add(int num0, int num1) {\r\n"
-                + "        return num0 + num1;\r\n"
-                + "    }\r\n" 
+        preloadSources.add("package com.zhg2yqq.wheels.dynamic.code;\n"
+                + "public class CodeTemplate {\n"
+                + "    public int add(int num0, int num1) {\n"
+                + "        return num0 + num1;\n"
+                + "    }\n" 
                 + "}");
         // 预编译
-        handler.preloadClass(preloadSources);
+        handler.loadClassFromSources(preloadSources);
 
         int times = 10000;
         List<Future<Object>> results = new ArrayList<>(times);
@@ -187,13 +187,13 @@ public class RunHandlerThreadTest {
         RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
 
         int times = 10000;
-        String source = "package com.zhg2yqq.wheels.dynamic.code;\r\n"
-                + "public class CodeTemplate {\r\n"
-                + "    private int sum = 0;\r\n"
-                + "    public int add(int num) {\r\n"
-                + "        sum += num;\r\n"
-                + "        return sum;\r\n" 
-                + "    }\r\n" 
+        String source = "package com.zhg2yqq.wheels.dynamic.code;\n"
+                + "public class CodeTemplate {\n"
+                + "    private int sum = 0;\n"
+                + "    public int add(int num) {\n"
+                + "        sum += num;\n"
+                + "        return sum;\n" 
+                + "    }\n" 
                 + "}";
         // 执行源码
         Parameters args = new Parameters();
@@ -218,13 +218,13 @@ public class RunHandlerThreadTest {
         
         // 重新编译
         costTime = 0;
-        handler.reloadClassFromSource("package com.zhg2yqq.wheels.dynamic.code;\r\n"
-                + "public class CodeTemplate {\r\n"
-                + "    private int sum = 0;\r\n"
-                + "    public int add(int num) {\r\n"
-                + "        sum += (num << 1);\r\n"
-                + "        return sum;\r\n" 
-                + "    }\r\n" 
+        handler.loadClassFromSource("package com.zhg2yqq.wheels.dynamic.code;\n"
+                + "public class CodeTemplate {\n"
+                + "    private int sum = 0;\n"
+                + "    public int add(int num) {\n"
+                + "        sum += (num << 1);\n"
+                + "        return sum;\n" 
+                + "    }\n" 
                 + "}");
         for (int i = 0; i < times; i++) {
             ExecuteResult result = handler.runMethod(source, "add", args, true);
@@ -254,11 +254,11 @@ public class RunHandlerThreadTest {
         RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
         
         // 待预编译源码
-        String source = "package com.zhg2yqq.wheels.dynamic.code;\r\n"
-                + "public class CodeTemplate {\r\n"
-                + "    public int add(int num0, int num1) {\r\n"
-                + "        return num0 + num1;\r\n"
-                + "    }\r\n" 
+        String source = "package com.zhg2yqq.wheels.dynamic.code;\n"
+                + "public class CodeTemplate {\n"
+                + "    public int add(int num0, int num1) {\n"
+                + "        return num0 + num1;\n"
+                + "    }\n" 
                 + "}";
 
         int times = 10000;

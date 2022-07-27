@@ -134,16 +134,39 @@ public class ClassUtils {
      * @return 类的全名称
      */
     public static String getFullClassName(String sourceCode) {
-        String className = "";
+        String packageName = getPackageName(sourceCode);
+        String classSimpleName = getClassSimpleName(sourceCode);
+        if (packageName == null || classSimpleName == null) {
+            return null;
+        }
+        return packageName + "." + classSimpleName;
+    }
+
+    /**
+     * 获取package
+     *
+     * @param sourceCode 源码
+     * @return 包名
+     */
+    public static String getPackageName(String sourceCode) {
         Matcher matcher = PACKAGE_NAME_PATTERN.matcher(sourceCode);
         if (matcher.find()) {
-            className = matcher.group().replaceFirst("package", "").replace(";", "").trim() + ".";
+            return matcher.group().replaceFirst("package", "").replace(";", "").trim();
         }
+        return null;
+    }
 
-        matcher = CLASS_NAME_PATTERN.matcher(sourceCode);
+    /**
+     * 获取className
+     *
+     * @param sourceCode 源码
+     * @return 类名（包含包名）
+     */
+    public static String getClassSimpleName(String sourceCode) {
+        Matcher matcher = CLASS_NAME_PATTERN.matcher(sourceCode);
         if (matcher.find()) {
-            className += matcher.group().replaceFirst("class", "").replace("{", "").trim();
+            return matcher.group().replaceFirst("class", "").replace("{", "").trim();
         }
-        return className;
+        return null;
     }
 }

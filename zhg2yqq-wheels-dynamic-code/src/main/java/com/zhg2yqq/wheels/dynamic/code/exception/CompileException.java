@@ -45,6 +45,11 @@ public class CompileException extends BaseDynamicException {
         this.compileMessage = this.formatCollector(diagnosticsCollector);
     }
 
+    @Override
+    public String getMessage() {
+        return compileMessage;
+    }
+
     public String getCompileMessage() {
         return compileMessage;
     }

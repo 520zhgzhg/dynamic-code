@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import com.zhg2yqq.wheels.dynamic.code.core.HotSwapClassLoader;
 import com.zhg2yqq.wheels.dynamic.code.dto.ByteJavaFileObject;
 import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
+import com.zhg2yqq.wheels.dynamic.code.dto.ClassBean;
 import com.zhg2yqq.wheels.dynamic.code.dto.CompileResult;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
 import com.zhg2yqq.wheels.dynamic.code.dto.Parameters;
@@ -19,6 +20,7 @@ import com.zhg2yqq.wheels.dynamic.code.exception.BaseDynamicException;
 import com.zhg2yqq.wheels.dynamic.code.exception.ClassLoadException;
 import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
 import com.zhg2yqq.wheels.dynamic.code.util.ClassModifier;
+import com.zhg2yqq.wheels.dynamic.code.util.ClassUtils;
 
 /**
  * 执行器公共方法
@@ -109,6 +111,28 @@ public abstract class AbstractRunHandler<R extends ExecuteResult> {
     public abstract R runMethod(String sourceOrClass, String methodName, Parameters parameters,
                                 boolean singleton)
         throws BaseDynamicException;
+
+    /**
+     * 加载Class，如果存在原始Class将会覆盖，返回新Class。
+     * 
+     * @param sourceStr 源码
+     * @return 类
+     * @throws CompileException .
+     * @throws ClassLoadException .
+     */
+    public ClassBean<?> loadClassFromSource(String sourceStr)
+        throws CompileException, ClassLoadException {
+        String fullClassName = ClassUtils.getFullClassName(sourceStr);
+        Class<?> clazz = this.loadClass(fullClassName, sourceStr);
+        this.getClassCache().put(fullClassName, new ClassBean<>(clazz));
+        return this.getClassCache().get(fullClassName);
+    }
+    
+    /**
+     * 获取暂存加载的Class的缓存
+     * @return
+     */
+    protected abstract Map<String, ClassBean<?>> getClassCache();
 
     /**
      * 加载Class
