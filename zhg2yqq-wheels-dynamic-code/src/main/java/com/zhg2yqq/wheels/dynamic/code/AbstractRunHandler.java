@@ -174,13 +174,15 @@ public abstract class AbstractRunHandler<R extends ExecuteResult, T extends Clas
     private Class<?> load(String fullClassName, String sourceStr,
                           Supplier<IClassLoader> loaderSupplier)
         throws CompileException, ClassLoadException {
+        // 编译
         CompileResult compileResult = compiler.compile(fullClassName, sourceStr, calTime);
+        // 获取编译后的字节码
         ByteJavaFileObject fileObject = compileResult.getFileObject();
         byte[] modiBytes = fileObject.getCompiledBytes();
         // 传入需要修改的字节数组
         ClassModifier classModifier = new ClassModifier(modiBytes);
 
-        // 替换
+        // 替换（主要是替换我们认为对系统运行有危害性的JRE类）
         if (hackers != null && !hackers.isEmpty()) {
             for (Entry<String, String> hacker : hackers.entrySet()) {
                 modiBytes = classModifier.modifyUTF8Constant(hacker.getKey(), hacker.getValue());

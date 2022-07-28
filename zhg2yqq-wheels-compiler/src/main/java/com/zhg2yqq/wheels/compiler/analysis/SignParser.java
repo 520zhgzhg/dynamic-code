@@ -35,16 +35,15 @@ public class SignParser {
         ".", ",", ";",
         "(", ")", "[", "]", "{", "}"
     };
-    // 根据长度分组存储
-    private final static List<Set<String>> signSetList;
     // 所有运算符中可能出现的字符集合
-    private final static Set<Character> signCharSet;
-    private final static int MaxLength, MinLength;
+    private static final Set<Character> SIGN_CHAR_SET = new HashSet<>();
+    // 根据长度分组存储
+    private static final List<Set<String>> SIGN_SET_LIST;
+    // 所有符号里最大长度与最小长度
+    private static int maxLength = Integer.MIN_VALUE;
+    private static int minLength = Integer.MAX_VALUE;
     
     static {
-        int maxLength = Integer.MIN_VALUE;
-        int minLength = Integer.MAX_VALUE;
-        signCharSet = new HashSet<>();
         for(String sign:signArray) {
             int length = sign.length();
             if(length > maxLength) {
@@ -54,24 +53,25 @@ public class SignParser {
                 minLength = length;
             }
             for(int i=0; i<length; ++i) {
-                signCharSet.add(sign.charAt(i));
+                SIGN_CHAR_SET.add(sign.charAt(i));
             }
         }
-        signSetList = new ArrayList<>(maxLength - minLength + 1);
-        for(int i=0; i< maxLength - minLength + 1; ++i) {
-            signSetList.add(new HashSet<>());
+        
+        // 根据符号长度分组
+        int lenGroupSize = maxLength - minLength + 1;
+        SIGN_SET_LIST = new ArrayList<>(lenGroupSize);
+        for(int i=0; i < lenGroupSize; i++) {
+            SIGN_SET_LIST.add(new HashSet<>());
         }
         for(String sign:signArray) {
             int length = sign.length();
-            Set<String> signSet = signSetList.get(length - minLength);
+            Set<String> signSet = SIGN_SET_LIST.get(length - minLength);
             signSet.add(sign);
         }
-        MaxLength = maxLength;
-        MinLength = minLength;
     }
     
     static boolean inCharSet(char c) {
-        return signCharSet.contains(c);
+        return SIGN_CHAR_SET.contains(c);
     }
     
     static List<String> parse(String str)  {
@@ -92,11 +92,11 @@ public class SignParser {
     private static String match(int startIndex, String str) {
         String matchStr = null;
         int length = str.length() - startIndex;
-        length = Math.min(length, MaxLength);
-        if(length >= MinLength) {
-            for(int i=length - MinLength; i>=0; i--) {
-                int matchLength = i + MinLength;
-                HashSet<String> signSet = signSetList.get(i);
+        length = Math.min(length, maxLength);
+        if(length >= minLength) {
+            for(int i=length - minLength; i>=0; i--) {
+                int matchLength = i + minLength;
+                Set<String> signSet = SIGN_SET_LIST.get(i);
                 matchStr = str.substring(startIndex, startIndex + matchLength);
                 if(signSet.contains(matchStr)) {
                     break;
