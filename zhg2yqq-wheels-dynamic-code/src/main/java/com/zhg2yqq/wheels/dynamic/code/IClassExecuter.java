@@ -27,7 +27,7 @@ public interface IClassExecuter<R extends ExecuteResult> {
      * @return 方法执行结果
      * @throws ExecuteException .
      */
-    <E extends ExecuteCondition> R runMethod(ExecuteParameter<? extends ClassBean<?>> parameter,
+    <E extends ExecuteCondition> R runMethod(ExecuteParameter<? extends ClassBean> parameter,
                                             E excuteCondition)
         throws ExecuteException;
 }

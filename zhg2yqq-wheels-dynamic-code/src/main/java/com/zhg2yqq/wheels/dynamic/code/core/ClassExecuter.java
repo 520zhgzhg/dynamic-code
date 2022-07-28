@@ -32,7 +32,7 @@ public class ClassExecuter implements IClassExecuter<ExecuteResult> {
      * @throws ExecuteException .
      */
     @Override
-    public <E extends ExecuteCondition> ExecuteResult runMethod(ExecuteParameter<? extends ClassBean<?>> parameter,
+    public <E extends ExecuteCondition> ExecuteResult runMethod(ExecuteParameter<? extends ClassBean> parameter,
                                                                 E excuteCondition)
         throws ExecuteException {
         long runTakeTime = -1;
@@ -51,15 +51,15 @@ public class ClassExecuter implements IClassExecuter<ExecuteResult> {
         return new ExecuteResult(runTakeTime, returnVal);
     }
 
-    private <T> Object run(ExecuteParameter<? extends ClassBean<T>> parameter, boolean useSingleton)
+    private Object run(ExecuteParameter<? extends ClassBean> parameter, boolean useSingleton)
         throws ExecuteException {
         try {
-            ClassBean<T> classBean = parameter.getClassBean();
-            T instance = classBean.getInstance();
+            ClassBean classBean = parameter.getClassBean();
+            Object instance = classBean.getInstance();
             if (useSingleton) {
                 // 单例
                 if (instance == null) {
-                    AtomicReference<T> instanceReference = classBean.getInstanceReference();
+                    AtomicReference<Object> instanceReference = classBean.getInstanceReference();
                     instanceReference.compareAndSet(null,
                             ClassUtils.getClassInstance(classBean.getClazz()));
                     instance = instanceReference.get();

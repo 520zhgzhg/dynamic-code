@@ -87,11 +87,17 @@ public class RunHandlerTest {
                 pars1);
         Assert.assertEquals("测试1", result1.getReturnVal());
 
+        handler.loadClassFromSource("package com.zhg2yqq.wheels.dynamic.code;\n"
+                + "public class CodeTemplate {\n"
+                + "    public String trimStr(String str) {\n"
+                + "        return str.trim() + \"zhg\";\n" 
+                + "    }\n" 
+                + "}");
         Parameters pars2 = new Parameters();
         pars2.add("  zhg2yqq  测试2");
         ExecuteResult result2 = handler.runMethod("com.zhg2yqq.wheels.dynamic.code.CodeTemplate", "trimStr",
                 pars2);
-        Assert.assertEquals("zhg2yqq  测试2", result2.getReturnVal());
+        Assert.assertEquals("zhg2yqq  测试2zhg", result2.getReturnVal());
 
         System.out.println("预编译测试 end");
     }

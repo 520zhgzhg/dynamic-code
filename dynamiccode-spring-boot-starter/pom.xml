@@ -8,7 +8,8 @@
 	<artifactId>dynamiccode-spring-boot-starter</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<!-- 正式版本 -->
-	<version>1.8.1-LITE</version>
+    <version>1.8.2</version>
+	<!-- <version>1.8.2-LITE</version> -->
 	<description>Java8 Dynamic Code SpringBoot Starter</description>
 	<url>https://github.com/520zhgzhg</url>
 	<!-- 许可证信息 -->
