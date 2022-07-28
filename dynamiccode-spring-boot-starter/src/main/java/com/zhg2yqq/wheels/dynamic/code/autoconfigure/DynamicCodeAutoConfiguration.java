@@ -4,6 +4,8 @@
  */
 package com.zhg2yqq.wheels.dynamic.code.autoconfigure;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +22,9 @@ import com.zhg2yqq.wheels.dynamic.code.autoconfigure.DynamicCodeProperties.RunCl
 import com.zhg2yqq.wheels.dynamic.code.autoconfigure.DynamicCodeProperties.RunSourceProperties;
 import com.zhg2yqq.wheels.dynamic.code.core.ClassExecuter;
 import com.zhg2yqq.wheels.dynamic.code.core.StringJavaCompiler;
+import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
+import com.zhg2yqq.wheels.dynamic.code.factory.AbstractCompilerFactory;
+import com.zhg2yqq.wheels.dynamic.code.factory.StandardCompilerFactory;
 
 /**
  * 自动配置
@@ -38,26 +43,38 @@ public class DynamicCodeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public IStringCompiler stringCompiler() {
-        return new StringJavaCompiler();
+    public AbstractCompilerFactory compilerFactory() throws MalformedURLException {
+        URL jdkToolUrl = null;
+        if (properties.getJdkToolUrl() != null && !properties.getJdkToolUrl().isEmpty()) {
+            jdkToolUrl = new URL(properties.getJdkToolUrl());
+        }
+        return new StandardCompilerFactory(jdkToolUrl);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public IClassExecuter classExecuter() {
+    public IStringCompiler stringCompiler(AbstractCompilerFactory compilerFactory) {
+        return new StringJavaCompiler(compilerFactory);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public IClassExecuter<ExecuteResult> classExecuter() {
         return new ClassExecuter();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public RunClassHandler runClassHandler(IStringCompiler compiler, IClassExecuter executer) {
+    public RunClassHandler runClassHandler(IStringCompiler compiler,
+                                                          IClassExecuter<ExecuteResult> executer) {
         RunClassProperties classProperties = properties.getClassHandler();
         return new RunClassHandler(compiler, executer, classProperties, hacker());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public RunSourceHandler runSourceHandler(IStringCompiler compiler, IClassExecuter executer) {
+    public RunSourceHandler runSourceHandler(IStringCompiler compiler,
+                                                            IClassExecuter<ExecuteResult> executer) {
         RunSourceProperties sourceProperties = properties.getSourceHandler();
         return new RunSourceHandler(compiler, executer, sourceProperties, hacker(),
                 sourceProperties.getCacheSize());

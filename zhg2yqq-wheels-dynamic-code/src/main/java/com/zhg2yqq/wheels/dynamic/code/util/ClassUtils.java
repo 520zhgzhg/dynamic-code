@@ -67,11 +67,64 @@ public class ClassUtils {
 
         if (!Modifier.isStatic(method.getModifiers())) {
             // 如果方法是不是静态方法，则需要先实例类
-            // 源码必须含有可访问的无参构造方法
-            Constructor<?> noArgConstructor = clazz.getConstructor();
-            target = noArgConstructor.newInstance();
+            target = getClassInstance(clazz);
         }
         return method.invoke(target, values);
+    }
+
+    /**
+     * 根据class获取实例
+     * 
+     * @param <T> 实例类型
+     * @param clazz .
+     * @return 实例
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public static <T> T getClassInstance(Class<T> clazz) throws NoSuchMethodException,
+        InvocationTargetException, InstantiationException, IllegalAccessException {
+        // 源码必须含有可访问的无参构造方法
+        Constructor<T> noArgConstructor = clazz.getConstructor();
+        return noArgConstructor.newInstance();
+    }
+
+    /**
+     * 调用实例中方法
+     * 
+     * @param instance 实例
+     * @param methodName 方法名
+     * @param args 方法参数
+     * @return 方法执行结果
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public static Object runInstanceMethod(Object instance, String methodName, Parameters args)
+        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        if (instance == null) {
+            throw new IllegalArgumentException("实例不能为空");
+        }
+        Class<?> clazz = instance.getClass();
+        Object[] values = null;
+        Method method;
+        if (args == null || args.isEmpty()) {
+            // 如果无参，找类中无参方法
+            method = clazz.getMethod(methodName);
+        } else {
+            // 如果有参，找类中参数顺序相符的方法
+            List<Parameter> params = args.getParameters();
+            Class<?>[] clazzes = new Class[params.size()];
+            values = new Object[params.size()];
+            for (int i = 0; i < clazzes.length; i++) {
+                Parameter param = params.get(i);
+                clazzes[i] = param.getClazz();
+                values[i] = param.getVaule();
+            }
+            method = clazz.getMethod(methodName, clazzes);
+        }
+        return method.invoke(instance, values);
     }
 
     /**
@@ -81,16 +134,39 @@ public class ClassUtils {
      * @return 类的全名称
      */
     public static String getFullClassName(String sourceCode) {
-        String className = "";
+        String packageName = getPackageName(sourceCode);
+        String classSimpleName = getClassSimpleName(sourceCode);
+        if (packageName == null || classSimpleName == null) {
+            return null;
+        }
+        return packageName + "." + classSimpleName;
+    }
+
+    /**
+     * 获取package
+     *
+     * @param sourceCode 源码
+     * @return 包名
+     */
+    public static String getPackageName(String sourceCode) {
         Matcher matcher = PACKAGE_NAME_PATTERN.matcher(sourceCode);
         if (matcher.find()) {
-            className = matcher.group().replaceFirst("package", "").replace(";", "").trim() + ".";
+            return matcher.group().replaceFirst("package", "").replace(";", "").trim();
         }
+        return null;
+    }
 
-        matcher = CLASS_NAME_PATTERN.matcher(sourceCode);
+    /**
+     * 获取className
+     *
+     * @param sourceCode 源码
+     * @return 类名（包含包名）
+     */
+    public static String getClassSimpleName(String sourceCode) {
+        Matcher matcher = CLASS_NAME_PATTERN.matcher(sourceCode);
         if (matcher.find()) {
-            className += matcher.group().replaceFirst("class", "").replace("{", "").trim();
+            return matcher.group().replaceFirst("class", "").replace("{", "").trim();
         }
-        return className;
+        return null;
     }
 }

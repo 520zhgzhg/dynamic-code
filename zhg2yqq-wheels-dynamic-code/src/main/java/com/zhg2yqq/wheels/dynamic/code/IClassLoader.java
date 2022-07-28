@@ -19,7 +19,7 @@ public interface IClassLoader {
      * @param name 类全名
      * @param classByte 字节码
      * @return 类
-     * @throws ClassLoadException
+     * @throws ClassLoadException .
      */
     Class<?> loadByte(String name, byte[] classByte) throws ClassLoadException;
 }

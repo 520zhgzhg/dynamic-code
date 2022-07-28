@@ -24,7 +24,7 @@ public interface IStringCompiler {
      * @param sourceCode 源码
      * @param calTime 编译计时条件
      * @return 成功编译结果
-     * @throws CompileException
+     * @throws CompileException .
      */
     CompileResult compile(String fullClassName, String sourceCode, CalTimeDTO calTime)
         throws CompileException;
