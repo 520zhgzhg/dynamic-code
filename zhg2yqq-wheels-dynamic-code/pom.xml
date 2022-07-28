@@ -7,7 +7,7 @@
 	<groupId>com.zhg2yqq</groupId>
 	<artifactId>wheels-dynamic-code</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<version>1.8.1${versionSuffix}</version>
+	<version>1.8.2${versionSuffix}</version>
 	<description>Java8 Dynamic Code in anywhere</description>
 	<url>https://github.com/520zhgzhg</url>
 	<!-- 许可证信息 -->

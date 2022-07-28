@@ -26,10 +26,11 @@ import com.zhg2yqq.wheels.dynamic.code.util.ClassUtils;
  * 执行器公共方法
  * 
  * @param <R> 执行结果类型
+ * @param <T> 缓存对象
  * @version zhg2yqq v1.0
  * @author 周海刚, 2022年7月13日
  */
-public abstract class AbstractRunHandler<R extends ExecuteResult> {
+public abstract class AbstractRunHandler<R extends ExecuteResult, T extends ClassBean> {
     /**
      * 编译器
      */
@@ -120,19 +121,26 @@ public abstract class AbstractRunHandler<R extends ExecuteResult> {
      * @throws CompileException .
      * @throws ClassLoadException .
      */
-    public ClassBean<?> loadClassFromSource(String sourceStr)
-        throws CompileException, ClassLoadException {
+    public T loadClassFromSource(String sourceStr) throws CompileException, ClassLoadException {
         String fullClassName = ClassUtils.getFullClassName(sourceStr);
         Class<?> clazz = this.loadClass(fullClassName, sourceStr);
-        this.getClassCache().put(fullClassName, new ClassBean<>(clazz));
+        this.getClassCache().put(fullClassName, this.buildClassBean(clazz));
         return this.getClassCache().get(fullClassName);
     }
-    
+
     /**
      * 获取暂存加载的Class的缓存
-     * @return
+     * 
+     * @return .
      */
-    protected abstract Map<String, ClassBean<?>> getClassCache();
+    protected abstract Map<String, T> getClassCache();
+
+    /**
+     * 构造缓存对象
+     * 
+     * @return 
+     */
+    protected abstract T buildClassBean(Class<?> clazz);
 
     /**
      * 加载Class

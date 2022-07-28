@@ -10,7 +10,7 @@ package com.zhg2yqq.wheels.dynamic.code.dto;
  * @version zhg2yqq v1.0
  * @author 周海刚, 2022年7月23日
  */
-public class ExecuteParameter<T extends ClassBean<?>> {
+public class ExecuteParameter<T extends ClassBean> {
     /**
      * 类与实例
      */

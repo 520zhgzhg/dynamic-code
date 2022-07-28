@@ -24,11 +24,11 @@ import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
  * @version zhg2yqq v1.0
  * @author 周海刚, 2022年7月8日
  */
-public class RunClassHandler extends AbstractRunHandler<ExecuteResult> {
+public class RunClassHandler extends AbstractRunHandler<ExecuteResult, ClassBean> {
     /**
      * 缓存类
      */
-    private Map<String, ClassBean<?>> cacheClasses = new ConcurrentHashMap<>();
+    private Map<String, ClassBean> cacheClasses = new ConcurrentHashMap<>();
 
     public RunClassHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime) {
         this(compiler, executer, calTime, null);
@@ -75,11 +75,11 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult> {
     public ExecuteResult runMethod(String fullClassName, String methodName, Parameters parameters,
                                    boolean singleton)
         throws BaseDynamicException {
-        ClassBean<?> classBean = this.getClassCache().get(fullClassName);
+        ClassBean classBean = this.getClassCache().get(fullClassName);
         if (classBean == null) {
             throw new BaseDynamicException(fullClassName + " 尚未编译源码");
         }
-        ExecuteParameter<ClassBean<?>> parameter = new ExecuteParameter<>(classBean, methodName, parameters);
+        ExecuteParameter<ClassBean> parameter = new ExecuteParameter<>(classBean, methodName, parameters);
         ExecuteCondition condition = new ExecuteCondition(singleton, getCalTime().isCalExecuteTime());
         return getExecuter().runMethod(parameter, condition);
     }
@@ -103,8 +103,12 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult> {
     }
 
     @Override
-    protected Map<String, ClassBean<?>> getClassCache() {
+    protected Map<String, ClassBean> getClassCache() {
         return cacheClasses;
     }
 
+    @Override
+    protected ClassBean buildClassBean(Class<?> clazz) {
+        return new ClassBean(clazz);
+    }
 }

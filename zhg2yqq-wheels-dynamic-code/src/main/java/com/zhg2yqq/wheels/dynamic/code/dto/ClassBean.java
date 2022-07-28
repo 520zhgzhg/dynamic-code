@@ -12,41 +12,41 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version zhg2yqq v1.0
  * @author 周海刚, 2022年7月23日
  */
-public class ClassBean<T> {
-    private Class<T> clazz;
-    private AtomicReference<T> instance;
+public class ClassBean {
+    private Class<?> clazz;
+    private AtomicReference<Object> instance;
 
     public ClassBean() {
         this(null);
     }
 
-    public ClassBean(Class<T> clazz) {
+    public ClassBean(Class<?> clazz) {
         this(clazz, null);
     }
 
-    public ClassBean(Class<T> clazz, T instance) {
+    public ClassBean(Class<?> clazz, Object instance) {
         super();
         this.clazz = clazz;
         this.instance = new AtomicReference<>(instance);
     }
 
-    public Class<T> getClazz() {
+    public Class<?> getClazz() {
         return clazz;
     }
 
-    public void setClazz(Class<T> clazz) {
+    public void setClazz(Class<?> clazz) {
         this.clazz = clazz;
     }
 
-    public T getInstance() {
+    public Object getInstance() {
         return instance.get();
     }
 
-    public AtomicReference<T> getInstanceReference() {
+    public AtomicReference<Object> getInstanceReference() {
         return instance;
     }
 
-    public void setInstance(T instance) {
+    public void setInstance(Object instance) {
         this.instance = new AtomicReference<>(instance);
     }
 }

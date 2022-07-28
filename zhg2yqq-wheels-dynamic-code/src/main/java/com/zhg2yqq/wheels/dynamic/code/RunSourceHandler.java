@@ -26,12 +26,12 @@ import com.zhg2yqq.wheels.dynamic.code.util.ClassUtils;
  * @version zhg2yqq v1.0
  * @author 周海刚, 2022年7月8日
  */
-public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
+public class RunSourceHandler extends AbstractRunHandler<ExecuteResult, ClassBean> {
     private static final int DEFAULT_CACHE_SIZE = 100;
     /**
      * 缓存类
      */
-    private final ConcurrentMap<String, ClassBean<?>> cacheClasses;
+    private final ConcurrentMap<String, ClassBean> cacheClasses;
 
     /**
      * 源码处理程序
@@ -84,7 +84,7 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
     public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime,
             Map<String, String> hackers, int cacheSize) {
         super(compiler, executer, calTime, hackers);
-        this.cacheClasses = new ConcurrentLinkedHashMap.Builder<String, ClassBean<?>>()
+        this.cacheClasses = new ConcurrentLinkedHashMap.Builder<String, ClassBean>()
                 .maximumWeightedCapacity(cacheSize).weigher(Weighers.singleton()).build();
     }
 
@@ -117,13 +117,13 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
      */
     public ExecuteResult runMethod(String source, String methodName, Parameters parameters,
                                    boolean singleton, boolean reloadClass) throws BaseDynamicException  {
-        ClassBean<?> classBean = null;
+        ClassBean classBean = null;
         if (reloadClass) {
             classBean = this.loadClassFromSource(source);
         } else {
             classBean = this.loadOrginalClassFromSource(source);
         }
-        ExecuteParameter<ClassBean<?>> parameter = new ExecuteParameter<>(classBean, methodName, parameters);
+        ExecuteParameter<ClassBean> parameter = new ExecuteParameter<>(classBean, methodName, parameters);
         ExecuteCondition condition = new ExecuteCondition(singleton, getCalTime().isCalExecuteTime());
         return getExecuter().runMethod(parameter, condition);
     }
@@ -172,14 +172,14 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
      * @throws CompileException .
      * @throws ClassLoadException .
      */
-    public ClassBean<?> loadOrginalClassFromSource(String sourceStr)
+    public ClassBean loadOrginalClassFromSource(String sourceStr)
         throws CompileException, ClassLoadException {
         String fullClassName = ClassUtils.getFullClassName(sourceStr);
         try {
             return this.getClassCache().computeIfAbsent(fullClassName, className -> {
                 try {
                     Class<?> clazz = loadClass(className, sourceStr);
-                    return new ClassBean<>(clazz);
+                    return new ClassBean(clazz);
                 } catch (CompileException | ClassLoadException e) {
                     throw new RuntimeException(e);
                 }
@@ -196,7 +196,12 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult> {
     }
 
     @Override
-    protected Map<String, ClassBean<?>> getClassCache() {
+    protected Map<String, ClassBean> getClassCache() {
         return cacheClasses;
+    }
+
+    @Override
+    protected ClassBean buildClassBean(Class<?> clazz) {
+        return new ClassBean(clazz);
     }
 }
