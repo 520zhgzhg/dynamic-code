@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.zhg2yqq.wheels.dynamic.code.core.ClassExecuter;
+import com.zhg2yqq.wheels.dynamic.code.core.JaninoCompiler;
 import com.zhg2yqq.wheels.dynamic.code.core.StringJavaCompiler;
 import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
@@ -104,14 +105,14 @@ public class RunHandlerTest {
 
     /**
      * 源码测试
-     * @throws BaseDynamicException 
+     * @throws Exception 
      */
     @Test
-    public void testRunSource() throws BaseDynamicException {
+    public void testRunSource() throws Exception {
         Map<String, String> hackers = new HashMap<>();
         CalTimeDTO calTime = new CalTimeDTO();
         calTime.setCalCompileTime(true);
-        IStringCompiler compiler = new StringJavaCompiler();
+        IStringCompiler compiler = new JaninoCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();
         RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
 

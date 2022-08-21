@@ -82,16 +82,20 @@ public class StringJavaCompiler extends AbstractStringCompiler implements IStrin
         // 标准的内容管理器,更换成自己的实现，覆盖部分方法
         StandardJavaFileManager standardFileManager = getCompiler()
                 .getStandardFileManager(diagnosticsCollector, null, null);
-        JavaFileManager javaFileManager = new StringJavaFileManager(standardFileManager, result);
         // 构造源代码对象
-        JavaFileObject javaFileObject = new StringJavaFileObject(result.getFullClassName(),
+        StringJavaFileObject javaFileObject = new StringJavaFileObject(result.getFullClassName(),
                 sourceCode);
+        JavaFileManager javaFileManager = new StringJavaFileManager(standardFileManager, javaFileObject);
         // 获取一个编译任务
         JavaCompiler.CompilationTask task = getCompiler().getTask(null, javaFileManager,
                 diagnosticsCollector, null, null, Arrays.asList(javaFileObject));
         // TODO 后期扩展支持Processors，实现类似Lombok功能
 //        task.setProcessors(processors);
-
-        return task.call();
+        
+        boolean compileComplete = task.call();
+        if (compileComplete) {
+            result.setCompiledBytes(javaFileObject.getCompiledBytes());
+        }
+        return compileComplete;
     }
 }

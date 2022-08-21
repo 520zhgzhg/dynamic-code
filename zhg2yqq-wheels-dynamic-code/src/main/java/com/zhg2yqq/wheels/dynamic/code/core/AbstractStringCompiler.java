@@ -28,7 +28,6 @@ public abstract class AbstractStringCompiler implements IStringCompiler {
         this.compiler = factory.getCompiler();
     }
 
-    @Override
     public JavaCompiler getCompiler() {
         return compiler;
     }

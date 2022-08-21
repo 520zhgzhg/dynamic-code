@@ -13,7 +13,7 @@ package com.zhg2yqq.wheels.dynamic.code.dto;
 public class CompileResult {
     private long compileTime;
     private String fullClassName;
-    private ByteJavaFileObject fileObject;
+    private byte[] compiledBytes;
 
     public CompileResult(String fullClassName) {
         this.fullClassName = fullClassName;
@@ -31,11 +31,11 @@ public class CompileResult {
         return fullClassName;
     }
 
-    public ByteJavaFileObject getFileObject() {
-        return fileObject;
+    public byte[] getCompiledBytes() {
+        return compiledBytes;
     }
 
-    public void setFileObject(ByteJavaFileObject fileObject) {
-        this.fileObject = fileObject;
+    public void setCompiledBytes(byte[] compiledBytes) {
+        this.compiledBytes = compiledBytes;
     }
 }
