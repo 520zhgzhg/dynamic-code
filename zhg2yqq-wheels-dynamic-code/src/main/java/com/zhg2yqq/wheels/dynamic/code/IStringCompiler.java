@@ -4,7 +4,7 @@
  */
 package com.zhg2yqq.wheels.dynamic.code;
 
-import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
+import com.zhg2yqq.wheels.dynamic.code.config.BaseProperties;
 import com.zhg2yqq.wheels.dynamic.code.dto.CompileResult;
 import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
 
@@ -20,11 +20,11 @@ public interface IStringCompiler {
      * 
      * @param fullClassName 类全名
      * @param sourceCode 源码
-     * @param calTime 编译计时条件
+     * @param properties 配置
      * @return 成功编译结果
      * @throws CompileException .
      */
-    CompileResult compile(String fullClassName, String sourceCode, CalTimeDTO calTime)
+    CompileResult compile(String fullClassName, String sourceCode, BaseProperties properties)
         throws CompileException;
     
 //    /**

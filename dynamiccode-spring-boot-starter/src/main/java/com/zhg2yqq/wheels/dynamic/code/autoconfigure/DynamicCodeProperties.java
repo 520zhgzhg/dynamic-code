@@ -8,7 +8,8 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
+import com.zhg2yqq.wheels.dynamic.code.config.RunClassProperties;
+import com.zhg2yqq.wheels.dynamic.code.config.RunSourceProperties;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -40,16 +41,4 @@ public class DynamicCodeProperties {
      * Class执行器配置
      */
     private RunClassProperties classHandler = new RunClassProperties();
-
-    @Getter @Setter
-    public static class RunSourceProperties extends CalTimeDTO {
-        /**
-         * 源码执行器的缓存容器大小
-         */
-        private int cacheSize = 100;
-    }
-
-    @Getter @Setter
-    public static class RunClassProperties extends CalTimeDTO {
-    }
 }

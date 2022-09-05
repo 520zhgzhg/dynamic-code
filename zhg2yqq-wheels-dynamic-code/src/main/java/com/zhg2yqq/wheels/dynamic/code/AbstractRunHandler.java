@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
+import com.zhg2yqq.wheels.dynamic.code.config.BaseProperties;
 import com.zhg2yqq.wheels.dynamic.code.core.HotSwapClassLoader;
-import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.ClassBean;
 import com.zhg2yqq.wheels.dynamic.code.dto.CompileResult;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
@@ -45,18 +45,18 @@ public abstract class AbstractRunHandler<R extends ExecuteResult, T extends Clas
     /**
      * 统计耗时条件
      */
-    private CalTimeDTO calTime;
+    private BaseProperties properties;
 
     /**
      * 处理程序
      * 
      * @param compiler 编译器
      * @param executer 执行器
-     * @param calTime 统计耗时条件
+     * @param properties 配置
      */
     public AbstractRunHandler(IStringCompiler compiler, IClassExecuter<R> executer,
-            CalTimeDTO calTime) {
-        this(compiler, executer, calTime, null);
+            BaseProperties properties) {
+        this(compiler, executer, properties, null);
     }
 
     /**
@@ -64,12 +64,12 @@ public abstract class AbstractRunHandler<R extends ExecuteResult, T extends Clas
      * 
      * @param compiler 编译器
      * @param executer 执行器
-     * @param calTime 统计耗时条件
+     * @param properties 配置
      * @param hackers
      *            安全替换（key:待替换的类名,例如:java/lang/System(也可java.lang.System)，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackSystem(也可com.zhg2yqq.wheels.dynamic.code.hack.HackSystem)）
      */
     public AbstractRunHandler(IStringCompiler compiler, IClassExecuter<R> executer,
-            CalTimeDTO calTime, Map<String, String> hackers) {
+            BaseProperties properties, Map<String, String> hackers) {
         this.compiler = compiler;
         this.executer = executer;
         if (hackers != null) {
@@ -81,7 +81,7 @@ public abstract class AbstractRunHandler<R extends ExecuteResult, T extends Clas
             }
             this.hackers = hks;
         }
-        this.calTime = calTime;
+        this.properties = properties;
     }
 
     /**
@@ -169,12 +169,19 @@ public abstract class AbstractRunHandler<R extends ExecuteResult, T extends Clas
         throws CompileException, ClassLoadException {
         return this.load(fullClassName, sourceStr, HotSwapClassLoader::new);
     }
+    
+    protected IClassLoader getClassLoader() {
+        if (properties.isSupportReload()) {
+            return new HotSwapClassLoader();
+        }
+        return SingleClassLoaderHolder.classLoader;
+    }
 
     private Class<?> load(String fullClassName, String sourceStr,
                           Supplier<IClassLoader> loaderSupplier)
         throws CompileException, ClassLoadException {
         // 编译
-        CompileResult compileResult = compiler.compile(fullClassName, sourceStr, calTime);
+        CompileResult compileResult = compiler.compile(fullClassName, sourceStr, properties);
         // 获取编译后的字节码
         byte[] modiBytes = compileResult.getCompiledBytes();
         
@@ -191,6 +198,13 @@ public abstract class AbstractRunHandler<R extends ExecuteResult, T extends Clas
         IClassLoader classLoader = loaderSupplier.get();
         return classLoader.loadByte(fullClassName, modiBytes);
     }
+    
+    /**
+     * 类加载器
+     */
+    static class SingleClassLoaderHolder {
+        static final IClassLoader classLoader = new HotSwapClassLoader();
+    }
 
     public IStringCompiler getCompiler() {
         return compiler;
@@ -204,7 +218,7 @@ public abstract class AbstractRunHandler<R extends ExecuteResult, T extends Clas
         return hackers;
     }
 
-    public CalTimeDTO getCalTime() {
-        return calTime;
+    public BaseProperties getProperties() {
+        return properties;
     }
 }

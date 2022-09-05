@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
+import com.zhg2yqq.wheels.dynamic.code.config.BaseProperties;
 import com.zhg2yqq.wheels.dynamic.code.dto.ClassBean;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteCondition;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteParameter;
@@ -30,8 +30,8 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult, ClassBean
      */
     private Map<String, ClassBean> cacheClasses = new ConcurrentHashMap<>();
 
-    public RunClassHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime) {
-        this(compiler, executer, calTime, null);
+    public RunClassHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, BaseProperties properties) {
+        this(compiler, executer, properties, null);
     }
 
     /**
@@ -39,13 +39,13 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult, ClassBean
      * 
      * @param compiler 编译器
      * @param runner 执行器
-     * @param calTime 统计耗时条件
+     * @param properties 配置
      * @param hackers
      *            安全替换（key:待替换的类名,例如:java/lang/System，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackSystem）
      */
-    public RunClassHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime,
+    public RunClassHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, BaseProperties properties,
             Map<String, String> hackers) {
-        super(compiler, executer, calTime, hackers);
+        super(compiler, executer, properties, hackers);
     }
 
     /**
@@ -79,8 +79,10 @@ public class RunClassHandler extends AbstractRunHandler<ExecuteResult, ClassBean
         if (classBean == null) {
             throw new BaseDynamicException(fullClassName + " 尚未编译源码");
         }
-        ExecuteParameter<ClassBean> parameter = new ExecuteParameter<>(classBean, methodName, parameters);
-        ExecuteCondition condition = new ExecuteCondition(singleton, getCalTime().isCalExecuteTime());
+        ExecuteParameter<ClassBean> parameter = new ExecuteParameter<>(classBean, methodName,
+                parameters);
+        ExecuteCondition condition = new ExecuteCondition(singleton,
+                getProperties().isCalExecuteTime(), getProperties().getExecuteTimeOut());
         return getExecuter().runMethod(parameter, condition);
     }
 

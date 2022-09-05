@@ -13,7 +13,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 
 import com.zhg2yqq.wheels.dynamic.code.IStringCompiler;
-import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
+import com.zhg2yqq.wheels.dynamic.code.config.BaseProperties;
 import com.zhg2yqq.wheels.dynamic.code.dto.CompileResult;
 import com.zhg2yqq.wheels.dynamic.code.dto.StringJavaFileObject;
 import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
@@ -39,19 +39,19 @@ public class StringJavaCompiler extends AbstractStringCompiler implements IStrin
      *
      * @param fullClassName class全名
      * @param sourceCode 源码字符串内容
-     * @param calTime 统计耗时条件
+     * @param properties 配置
      * @return CompileResult 编译后的结果
      * @throws CompileException
      */
     @Override
-    public CompileResult compile(String fullClassName, String sourceCode, CalTimeDTO calTime)
+    public CompileResult compile(String fullClassName, String sourceCode, BaseProperties properties)
         throws CompileException {
         long compilerTakeTime = -1;
         boolean compileSuccess;
         // 存放编译过程中输出的信息
         DiagnosticCollector<JavaFileObject> diagnosticsCollector = new DiagnosticCollector<>();
         CompileResult result = new CompileResult(fullClassName);
-        if (calTime.isCalCompileTime()) {
+        if (properties.isCalCompileTime()) {
             long startTime = System.currentTimeMillis();
             // 编译成字节，并将字节对象放入result
             compileSuccess = compile(sourceCode, diagnosticsCollector, result);

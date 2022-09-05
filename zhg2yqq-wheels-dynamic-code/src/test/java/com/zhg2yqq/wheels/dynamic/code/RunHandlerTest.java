@@ -8,14 +8,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.zhg2yqq.wheels.dynamic.code.config.BaseProperties;
+import com.zhg2yqq.wheels.dynamic.code.config.RunSourceProperties;
 import com.zhg2yqq.wheels.dynamic.code.core.ClassExecuter;
 import com.zhg2yqq.wheels.dynamic.code.core.JaninoCompiler;
 import com.zhg2yqq.wheels.dynamic.code.core.StringJavaCompiler;
-import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
 import com.zhg2yqq.wheels.dynamic.code.dto.Parameters;
 import com.zhg2yqq.wheels.dynamic.code.exception.BaseDynamicException;
@@ -36,7 +38,7 @@ public class RunHandlerTest {
     @Test
     public void testRunClass() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
-        CalTimeDTO calTime = new CalTimeDTO();
+        BaseProperties calTime = new BaseProperties();
         calTime.setCalExecuteTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();
@@ -110,7 +112,7 @@ public class RunHandlerTest {
     @Test
     public void testRunSource() throws Exception {
         Map<String, String> hackers = new HashMap<>();
-        CalTimeDTO calTime = new CalTimeDTO();
+        RunSourceProperties calTime = new RunSourceProperties();
         calTime.setCalCompileTime(true);
         IStringCompiler compiler = new JaninoCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();
@@ -184,7 +186,7 @@ public class RunHandlerTest {
     public void testHack() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
         hackers.put("java/io/File", "com/zhg2yqq/wheels/dynamic/code/hack/HackFile");
-        CalTimeDTO calTime = new CalTimeDTO();
+        RunSourceProperties calTime = new RunSourceProperties();
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();
         RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
@@ -215,7 +217,7 @@ public class RunHandlerTest {
         Map<String, String> hackers = new HashMap<>();
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();
-        RunSourceHandler handler = new RunSourceHandler(compiler, executer, new CalTimeDTO(), hackers);
+        RunSourceHandler handler = new RunSourceHandler(compiler, executer, new RunSourceProperties(), hackers);
 
         System.out.println("编译异常测试 start");
         Parameters pars0 = new Parameters();
@@ -241,7 +243,7 @@ public class RunHandlerTest {
     @Test
     public void testExecuteException() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
-        CalTimeDTO calTime = new CalTimeDTO();
+        RunSourceProperties calTime = new RunSourceProperties();
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();
         RunSourceHandler handler = new RunSourceHandler(compiler, executer, calTime, hackers);
@@ -263,6 +265,25 @@ public class RunHandlerTest {
         } catch (ExecuteException e) {
             Throwable cause = e.getSourceCause();
             Assert.assertTrue(cause instanceof ArithmeticException);
+        }
+
+        calTime.setExecuteTimeOut(5000);
+        try {
+            handler.runMethod(
+                "package com.zhg2yqq.wheels.dynamic.code;\n" 
+                + "import java.lang.InterruptedException;"
+                + "public class ExecuteTest {\n"
+                + "    public void calc() throws InterruptedException {\n"
+                + "        int a = 9;\n"
+                + "        int b = 1;\n"
+                + "        Thread.sleep(10000);\n"
+                + "        int c = a / b;\n"
+                + "    }\n" 
+                + "}",
+                "calc", pars0, true, true);
+            Assert.assertFalse(true);
+        } catch (ExecuteException e) {
+            Assert.assertTrue(e.getCause() instanceof TimeoutException);
         }
         System.out.println("源码运行测试 end");
     }

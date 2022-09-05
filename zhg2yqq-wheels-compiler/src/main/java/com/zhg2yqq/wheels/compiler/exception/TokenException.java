@@ -11,9 +11,13 @@ package com.zhg2yqq.wheels.compiler.exception;
  */
 public class TokenException extends CompileException {
     private static final long serialVersionUID = 1L;
-    private Character character;
+    private String charSequence;
     
-    public TokenException(Character character) {
-        this.character = character;
+    public TokenException(char c) {
+        this.charSequence = Character.toString(c);
+    }
+    
+    public TokenException(String charSequence) {
+        this.charSequence = charSequence;
     }
 }

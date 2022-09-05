@@ -19,15 +19,24 @@ public class ExecuteCondition {
      * 统计计算类方法执行时间
      */
     private boolean calExecuteTime;
+    /**
+     * 方法执行超时时间（防止死循环占用，小于等于0时表示无限制）
+     */
+    private long executeTimeOut;
 
     public ExecuteCondition() {
         this(false, false);
     }
 
     public ExecuteCondition(boolean useSingleton, boolean calExecuteTime) {
+        this(useSingleton, calExecuteTime, 0);
+    }
+
+    public ExecuteCondition(boolean useSingleton, boolean calExecuteTime, long executeTimeOut) {
         super();
         this.useSingleton = useSingleton;
         this.calExecuteTime = calExecuteTime;
+        this.executeTimeOut = executeTimeOut;
     }
 
     public boolean isUseSingleton() {
@@ -44,5 +53,13 @@ public class ExecuteCondition {
 
     public void setCalExecuteTime(boolean calExecuteTime) {
         this.calExecuteTime = calExecuteTime;
+    }
+
+    public long getExecuteTimeOut() {
+        return executeTimeOut;
+    }
+
+    public void setExecuteTimeOut(long executeTimeOut) {
+        this.executeTimeOut = executeTimeOut;
     }
 }

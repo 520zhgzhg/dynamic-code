@@ -11,7 +11,7 @@ import org.codehaus.commons.compiler.ICompilerFactory;
 import org.codehaus.commons.compiler.ISimpleCompiler;
 
 import com.zhg2yqq.wheels.dynamic.code.IStringCompiler;
-import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
+import com.zhg2yqq.wheels.dynamic.code.config.BaseProperties;
 import com.zhg2yqq.wheels.dynamic.code.dto.CompileResult;
 import com.zhg2yqq.wheels.dynamic.code.exception.CompileException;
 
@@ -31,20 +31,21 @@ public class JaninoCompiler implements IStringCompiler {
     }
 
     /**
-     * @param fullClassName
-     * @param sourceCode
-     * @param calTime
-     * @return
+     * 编译字符串源代码,编译失败在 diagnosticsCollector 中获取提示信息
+     *
+     * @param fullClassName class全名
+     * @param sourceCode 源码字符串内容
+     * @param properties 配置
+     * @return CompileResult 编译后的结果
      * @throws CompileException
-     * @see com.zhg2yqq.wheels.dynamic.code.IStringCompiler#compile(java.lang.String, java.lang.String, com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO)
      */
     @Override
-    public CompileResult compile(String fullClassName, String sourceCode, CalTimeDTO calTime)
+    public CompileResult compile(String fullClassName, String sourceCode, BaseProperties properties)
         throws CompileException {
         long compilerTakeTime = -1;
         byte[] compiledBytes = null;
         CompileResult result = new CompileResult(fullClassName);
-        if (calTime.isCalCompileTime()) {
+        if (properties.isCalCompileTime()) {
             long startTime = System.currentTimeMillis();
             // 编译成字节，并将字节对象放入result
             compiledBytes = compile(fullClassName, sourceCode);

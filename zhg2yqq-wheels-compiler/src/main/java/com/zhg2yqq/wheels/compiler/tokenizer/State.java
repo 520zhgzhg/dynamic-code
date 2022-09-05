@@ -2,7 +2,7 @@
  * Copyright (c) zhg2yqq Corp.
  * All Rights Reserved.
  */
-package com.zhg2yqq.wheels.compiler.analysis;
+package com.zhg2yqq.wheels.compiler.tokenizer;
 
 /**
  *
@@ -12,7 +12,13 @@ package com.zhg2yqq.wheels.compiler.analysis;
 public enum State {
     // 初始状态
     Normal,
-    Keyword, Number, Identifier, 
-    Sign, Annotation,
-    String, RegEx, Space
+    // 关键字与标识符
+    Identifier,
+    // 数值
+    Number, 
+    Sign, 
+//    Annotation,
+    String, Char, 
+//    RegEx, 
+    Space
 }

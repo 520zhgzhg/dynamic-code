@@ -21,9 +21,10 @@ import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.zhg2yqq.wheels.dynamic.code.config.BaseProperties;
+import com.zhg2yqq.wheels.dynamic.code.config.RunSourceProperties;
 import com.zhg2yqq.wheels.dynamic.code.core.ClassExecuter;
 import com.zhg2yqq.wheels.dynamic.code.core.StringJavaCompiler;
-import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
 import com.zhg2yqq.wheels.dynamic.code.dto.Parameters;
 import com.zhg2yqq.wheels.dynamic.code.exception.BaseDynamicException;
@@ -43,7 +44,7 @@ public class RunHandlerThreadTest {
     @Test
     public void testRunClassSingle() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
-        CalTimeDTO calTime = new CalTimeDTO();
+        BaseProperties calTime = new BaseProperties();
         calTime.setCalExecuteTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();
@@ -100,7 +101,7 @@ public class RunHandlerThreadTest {
     @Test
     public void testRunClassMulti() throws BaseDynamicException, InterruptedException, ExecutionException {
         Map<String, String> hackers = new HashMap<>();
-        CalTimeDTO calTime = new CalTimeDTO();
+        BaseProperties calTime = new BaseProperties();
         calTime.setCalExecuteTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();
@@ -178,7 +179,7 @@ public class RunHandlerThreadTest {
     @Test
     public void testRunSourceSingle() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
-        CalTimeDTO calTime = new CalTimeDTO();
+        RunSourceProperties calTime = new RunSourceProperties();
         calTime.setCalExecuteTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();
@@ -245,7 +246,7 @@ public class RunHandlerThreadTest {
     @Test
     public void testRunSourceMulti() throws BaseDynamicException, InterruptedException, ExecutionException {
         Map<String, String> hackers = new HashMap<>();
-        CalTimeDTO calTime = new CalTimeDTO();
+        RunSourceProperties calTime = new RunSourceProperties();
         calTime.setCalExecuteTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();

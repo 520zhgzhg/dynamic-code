@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import com.googlecode.concurrentlinkedhashmap.Weighers;
-import com.zhg2yqq.wheels.dynamic.code.dto.CalTimeDTO;
+import com.zhg2yqq.wheels.dynamic.code.config.RunSourceProperties;
 import com.zhg2yqq.wheels.dynamic.code.dto.ClassBean;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteCondition;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteParameter;
@@ -38,10 +38,10 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult, ClassBea
      * 
      * @param compiler 编译器
      * @param runner 执行器
-     * @param calTime 统计耗时条件
+     * @param properties 配置
      */
-    public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime) {
-        this(compiler, executer, calTime, null);
+    public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, RunSourceProperties properties) {
+        this(compiler, executer, properties, null);
     }
 
     /**
@@ -49,13 +49,13 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult, ClassBea
      * 
      * @param compiler 编译器
      * @param runner 执行器
-     * @param calTime 统计耗时条件
+     * @param properties 配置
      * @param hackers
      *            安全替换（key:待替换的类名,例如:java/lang/System，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackSystem）
      */
-    public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime,
+    public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, RunSourceProperties properties,
             Map<String, String> hackers) {
-        this(compiler, executer, calTime, hackers, DEFAULT_CACHE_SIZE);
+        this(compiler, executer, properties, hackers, DEFAULT_CACHE_SIZE);
     }
 
     /**
@@ -63,12 +63,12 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult, ClassBea
      * 
      * @param compiler 编译器
      * @param runner 执行器
-     * @param calTime 统计耗时条件
+     * @param properties 配置
      * @param cacheSize 缓存Class容器大小，超出容器大小将会以最近最少使用原则删除原数据
      */
-    public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime,
+    public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, RunSourceProperties properties,
             int cacheSize) {
-        this(compiler, executer, calTime, null, cacheSize);
+        this(compiler, executer, properties, null, cacheSize);
     }
 
     /**
@@ -76,14 +76,14 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult, ClassBea
      * 
      * @param compiler 编译器
      * @param runner 执行器
-     * @param calTime 统计耗时条件
+     * @param properties 配置
      * @param hackers
      *            安全替换（key:待替换的类名,例如:java/lang/System，value:替换成的类名,例如:com/zhg2yqq/wheels/dynamic/code/hack/HackSystem）
      * @param cacheSize 缓存Class容器大小，超出容器大小将会以最近最少使用原则删除原数据
      */
-    public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, CalTimeDTO calTime,
+    public RunSourceHandler(IStringCompiler compiler, IClassExecuter<ExecuteResult> executer, RunSourceProperties properties,
             Map<String, String> hackers, int cacheSize) {
-        super(compiler, executer, calTime, hackers);
+        super(compiler, executer, properties, hackers);
         this.cacheClasses = new ConcurrentLinkedHashMap.Builder<String, ClassBean>()
                 .maximumWeightedCapacity(cacheSize).weigher(Weighers.singleton()).build();
     }
@@ -123,8 +123,10 @@ public class RunSourceHandler extends AbstractRunHandler<ExecuteResult, ClassBea
         } else {
             classBean = this.loadOrginalClassFromSource(source);
         }
-        ExecuteParameter<ClassBean> parameter = new ExecuteParameter<>(classBean, methodName, parameters);
-        ExecuteCondition condition = new ExecuteCondition(singleton, getCalTime().isCalExecuteTime());
+        ExecuteParameter<ClassBean> parameter = new ExecuteParameter<>(classBean, methodName,
+                parameters);
+        ExecuteCondition condition = new ExecuteCondition(singleton,
+                getProperties().isCalExecuteTime(), getProperties().getExecuteTimeOut());
         return getExecuter().runMethod(parameter, condition);
     }
 

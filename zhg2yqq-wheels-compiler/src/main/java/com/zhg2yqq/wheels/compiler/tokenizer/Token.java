@@ -2,9 +2,7 @@
  * Copyright (c) zhg2yqq Corp.
  * All Rights Reserved.
  */
-package com.zhg2yqq.wheels.compiler.analysis;
-
-import java.util.HashSet;
+package com.zhg2yqq.wheels.compiler.tokenizer;
 
 /**
  * 词法-词属性
@@ -22,23 +20,25 @@ public class Token {
         Identifier,
         // 符号（+、-、*、/、=、;、.等）
         Sign,
-        // 注解
-        Annotation,
+//        // 注解
+//        Annotation,
         // 字符串
         String,
-        // 正则表达式
-        RegEx,
+//        // 正则表达式
+//        RegEx,
         // 空格
         Space,
         // 换行符
         NewLine,
         // 终止符
-        EndSymbol
+        EndSymbol;
     }
     // 类型
     final Type type;
     // 语素
     final String value;
+//    final int line;
+//    final int column;
 
     public Token(Type type, String value) {
 //        // 对编译器来说，Keyword、Number、Identifier高度相同，可统称为Identifier
@@ -61,30 +61,9 @@ public class Token {
     public String getValue() {
         return value;
     }
-    
-    private static final HashSet<String> keywordsSet = new HashSet<>();
-    static {
-        keywordsSet.add("if");
-        keywordsSet.add("when");
-        keywordsSet.add("elsif");
-        keywordsSet.add("else");
-        keywordsSet.add("while");
-        keywordsSet.add("begin");
-        keywordsSet.add("until");
-        keywordsSet.add("for");
-        keywordsSet.add("do");
-        keywordsSet.add("try");
-        keywordsSet.add("catch");
-        keywordsSet.add("finally");
-        keywordsSet.add("end");
-        keywordsSet.add("def");
-        keywordsSet.add("var");
-        keywordsSet.add("this");
-        keywordsSet.add("null");
-        keywordsSet.add("throw");
-        keywordsSet.add("break");
-        keywordsSet.add("continue");
-        keywordsSet.add("return");
-        keywordsSet.add("operator");
+
+    @Override
+    public String toString() {
+        return "Token [type=" + type + ", value=" + value + "]";
     }
 }

@@ -8,7 +8,7 @@
 	<artifactId>dynamiccode-spring-boot-starter</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<!-- 正式版本 -->
-    <version>1.8.2</version>
+    <version>1.8.3${versionSuffix}</version>
 	<!-- <version>1.8.2-LITE</version> -->
 	<description>Java8 Dynamic Code SpringBoot Starter</description>
 	<url>https://github.com/520zhgzhg</url>
@@ -98,9 +98,21 @@
 	</build>
 
 	<profiles>
-		<profile>
-			<!-- 编译命令示例：mvn clean deploy -P release -settings C:\apache-maven-3.6.0\conf\settings_aliyun.xml -->
-			<id>release</id>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <versionSuffix>-SNAPSHOT</versionSuffix>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 编译命令示例：mvn clean deploy -P release -settings C:\apache-maven-3.6.0\conf\settings_aliyun.xml -->
+            <id>release</id>
+            <properties>
+                <versionSuffix></versionSuffix>
+            </properties>
 			<build>
 				<plugins>
 					<!-- source包 -->

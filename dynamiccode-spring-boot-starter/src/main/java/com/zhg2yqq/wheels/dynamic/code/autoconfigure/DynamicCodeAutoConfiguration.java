@@ -4,7 +4,6 @@
  */
 package com.zhg2yqq.wheels.dynamic.code.autoconfigure;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,9 +17,10 @@ import com.zhg2yqq.wheels.dynamic.code.IClassExecuter;
 import com.zhg2yqq.wheels.dynamic.code.IStringCompiler;
 import com.zhg2yqq.wheels.dynamic.code.RunClassHandler;
 import com.zhg2yqq.wheels.dynamic.code.RunSourceHandler;
-import com.zhg2yqq.wheels.dynamic.code.autoconfigure.DynamicCodeProperties.RunClassProperties;
-import com.zhg2yqq.wheels.dynamic.code.autoconfigure.DynamicCodeProperties.RunSourceProperties;
+import com.zhg2yqq.wheels.dynamic.code.config.RunClassProperties;
+import com.zhg2yqq.wheels.dynamic.code.config.RunSourceProperties;
 import com.zhg2yqq.wheels.dynamic.code.core.ClassExecuter;
+import com.zhg2yqq.wheels.dynamic.code.core.JaninoCompiler;
 import com.zhg2yqq.wheels.dynamic.code.core.StringJavaCompiler;
 import com.zhg2yqq.wheels.dynamic.code.dto.ExecuteResult;
 import com.zhg2yqq.wheels.dynamic.code.factory.AbstractCompilerFactory;
@@ -43,18 +43,14 @@ public class DynamicCodeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AbstractCompilerFactory compilerFactory() throws MalformedURLException {
-        URL jdkToolUrl = null;
+    public IStringCompiler stringCompiler() throws Exception {
         if (properties.getJdkToolUrl() != null && !properties.getJdkToolUrl().isEmpty()) {
-            jdkToolUrl = new URL(properties.getJdkToolUrl());
+            URL jdkToolUrl = new URL(properties.getJdkToolUrl());
+            AbstractCompilerFactory compilerFactory = new StandardCompilerFactory(jdkToolUrl);
+            return new StringJavaCompiler(compilerFactory);
+        } else {
+            return new JaninoCompiler();
         }
-        return new StandardCompilerFactory(jdkToolUrl);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public IStringCompiler stringCompiler(AbstractCompilerFactory compilerFactory) {
-        return new StringJavaCompiler(compilerFactory);
     }
 
     @Bean
