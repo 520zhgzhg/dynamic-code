@@ -13,7 +13,7 @@ import java.util.concurrent.TimeoutException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.zhg2yqq.wheels.dynamic.code.config.BaseProperties;
+import com.zhg2yqq.wheels.dynamic.code.config.RunClassProperties;
 import com.zhg2yqq.wheels.dynamic.code.config.RunSourceProperties;
 import com.zhg2yqq.wheels.dynamic.code.core.ClassExecuter;
 import com.zhg2yqq.wheels.dynamic.code.core.JaninoCompiler;
@@ -38,7 +38,7 @@ public class RunHandlerTest {
     @Test
     public void testRunClass() throws BaseDynamicException {
         Map<String, String> hackers = new HashMap<>();
-        BaseProperties calTime = new BaseProperties();
+        RunClassProperties calTime = new RunClassProperties();
         calTime.setCalExecuteTime(true);
         IStringCompiler compiler = new StringJavaCompiler();
         IClassExecuter<ExecuteResult> executer = new ClassExecuter();

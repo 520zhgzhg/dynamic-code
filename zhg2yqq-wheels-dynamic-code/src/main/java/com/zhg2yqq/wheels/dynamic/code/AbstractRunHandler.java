@@ -167,7 +167,7 @@ public abstract class AbstractRunHandler<R extends ExecuteResult, T extends Clas
      */
     protected Class<?> loadClass(String fullClassName, String sourceStr)
         throws CompileException, ClassLoadException {
-        return this.load(fullClassName, sourceStr, HotSwapClassLoader::new);
+        return this.loadClass(fullClassName, sourceStr, getClassLoader());
     }
     
     protected IClassLoader getClassLoader() {
